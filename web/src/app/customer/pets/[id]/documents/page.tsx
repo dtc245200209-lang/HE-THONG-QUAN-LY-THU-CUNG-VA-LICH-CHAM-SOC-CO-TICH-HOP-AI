@@ -142,14 +142,34 @@ export default function PetDocumentsPage() {
 
     setConfirming(true);
     try {
-      await api.put(`/api/v1/pets/${id}/documents/${activeScannedDoc.id}/confirm`, confirmForm);
+      const payload = {
+        title: confirmForm.title || activeScannedDoc.title || 'Tài liệu y tế',
+        document_type: confirmForm.document_type || 'MEDICAL_REPORT',
+        vaccine_name: confirmForm.vaccine_name?.trim() || null,
+        vaccination_date: confirmForm.vaccination_date || null,
+        next_due_date: confirmForm.document_type === 'VACCINATION' && confirmForm.next_due_date ? confirmForm.next_due_date : null,
+        veterinarian: confirmForm.veterinarian?.trim() || null,
+        clinic: confirmForm.clinic?.trim() || null,
+        diagnosis: confirmForm.diagnosis?.trim() || null
+      };
+
+      await api.put(`/api/v1/pets/${id}/documents/${activeScannedDoc.id}/confirm`, payload);
       setConfirmSuccess("Đã xác nhận và tự động cập nhật vào Sổ sức khỏe số của thú cưng!");
       setActiveScannedDoc(null);
       setSelectedFile(null);
       setFilePreview(null);
       fetchData();
     } catch (err: any) {
-      alert("Lỗi khi xác nhận tài liệu: " + (err.response?.data?.detail || err.message));
+      const detail = err.response?.data?.detail;
+      let errMsg = err.message;
+      if (typeof detail === 'string') {
+        errMsg = detail;
+      } else if (Array.isArray(detail)) {
+        errMsg = detail.map((d: any) => `${d.loc?.slice(-1)[0] || 'Thông tin'}: ${d.msg}`).join('\n');
+      } else if (typeof detail === 'object' && detail !== null) {
+        errMsg = JSON.stringify(detail);
+      }
+      alert("Lỗi khi xác nhận tài liệu:\n" + errMsg);
     } finally {
       setConfirming(false);
     }

@@ -600,25 +600,28 @@ def confirm_document(
     doc.title = confirm_in.title
     doc.document_type = confirm_in.document_type
     
-    if confirm_in.document_type == "VACCINATION" and confirm_in.vaccine_name and confirm_in.vaccination_date:
+    if confirm_in.document_type == "VACCINATION":
+        vac_date = confirm_in.vaccination_date or date.today()
+        vac_name = confirm_in.vaccine_name or confirm_in.title or "Vắc-xin tiêm chủng"
         vaccination = Vaccination(
             pet_id=pet.id,
-            name=confirm_in.vaccine_name,
-            vaccination_date=confirm_in.vaccination_date,
+            name=vac_name,
+            vaccination_date=vac_date,
             next_due_date=confirm_in.next_due_date,
             clinic=confirm_in.clinic,
             document_url=doc.file_url
         )
         db.add(vaccination)
         
-    elif confirm_in.document_type in ["PRESCRIPTION", "MEDICAL_REPORT", "LAB_RESULT"] and confirm_in.vaccination_date:
-        # Fallback to use vaccination_date field for visit_date since that's what the AI outputs for dates
+    elif confirm_in.document_type in ["PRESCRIPTION", "MEDICAL_REPORT", "LAB_RESULT"]:
+        visit_date = confirm_in.vaccination_date or date.today()
+        diag = confirm_in.diagnosis or confirm_in.title or "Hồ sơ khám bệnh"
         record = MedicalRecord(
             pet_id=pet.id,
-            visit_date=confirm_in.vaccination_date,
+            visit_date=visit_date,
             clinic=confirm_in.clinic,
             veterinarian=confirm_in.veterinarian,
-            diagnosis=confirm_in.diagnosis,
+            diagnosis=diag,
             document_url=doc.file_url
         )
         db.add(record)

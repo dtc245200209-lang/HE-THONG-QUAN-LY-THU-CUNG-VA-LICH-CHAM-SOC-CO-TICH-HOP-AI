@@ -1,7 +1,7 @@
-from typing import Optional, List
+from typing import Optional, List, Dict, Any, Union
 from uuid import UUID
 from datetime import datetime, date
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from app.models.pet import PetSpecies, PetSex, MembershipRole
 from app.schemas.care_session import CareReportResponse
 
@@ -179,7 +179,7 @@ class PublicPetResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 class AIDocumentExtractionResult(BaseModel):
-    document_type: str # e.g. VACCINATION, PRESCRIPTION, MEDICAL_REPORT, LAB_RESULT
+    document_type: Optional[str] = "MEDICAL_REPORT"
     pet_name: Optional[str] = None
     vaccine_name: Optional[str] = None
     vaccination_date: Optional[date] = None
@@ -187,7 +187,8 @@ class AIDocumentExtractionResult(BaseModel):
     veterinarian: Optional[str] = None
     clinic: Optional[str] = None
     diagnosis: Optional[str] = None
-    confidence: float
+    confidence: Optional[float] = 0.95
+    model_config = ConfigDict(extra="allow")
     
 class PetDocumentResponse(BaseModel):
     id: UUID
@@ -197,7 +198,7 @@ class PetDocumentResponse(BaseModel):
     file_url: str
     upload_date: datetime
     status: str
-    extracted_data: Optional[AIDocumentExtractionResult] = None
+    extracted_data: Optional[Any] = None
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -210,6 +211,35 @@ class PetDocumentConfirmRequest(BaseModel):
     veterinarian: Optional[str] = None
     clinic: Optional[str] = None
     diagnosis: Optional[str] = None
+
+    @field_validator("vaccination_date", "next_due_date", mode="before")
+    @classmethod
+    def parse_empty_date(cls, v):
+        if v == "" or v is None:
+            return None
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                return None
+            try:
+                from datetime import datetime as dt
+                if len(v) == 10 and v[4] == '-' and v[7] == '-':
+                    return dt.strptime(v, "%Y-%m-%d").date()
+                elif len(v) == 10 and v[2] == '/' and v[5] == '/':
+                    try:
+                        return dt.strptime(v, "%m/%d/%Y").date()
+                    except ValueError:
+                        return dt.strptime(v, "%d/%m/%Y").date()
+            except Exception:
+                pass
+        return v
+
+    @field_validator("vaccine_name", "veterinarian", "clinic", "diagnosis", mode="before")
+    @classmethod
+    def clean_empty_strings(cls, v):
+        if v == "":
+            return None
+        return v
 
 class PetMemberUser(BaseModel):
     id: UUID

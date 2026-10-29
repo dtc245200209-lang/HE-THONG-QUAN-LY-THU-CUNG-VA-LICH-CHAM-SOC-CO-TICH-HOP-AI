@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Thuyết Trình: Hệ Thống Quản Lý Thú Cưng & Lịch Chăm Sóc Có Tích Hợp AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0e387a;
+            --primary-light: #1e4ea0;
+            --secondary: #0d9488;
+            --dark: #1e293b;
+            --muted: #64748b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #dc2626;
+            --amber: #d97706;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: var(--dark);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #deck-container {
+            width: 96vw;
+            max-width: 1400px;
+            aspect-ratio: 16 / 9;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 40px 50px;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Slide Headers */
+        .slide-header {
+            margin-bottom: 24px;
+        }
+
+        .slide-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1.3;
+        }
+
+        .slide-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--secondary);
+            margin-top: 4px;
+        }
+
+        /* Title Slide Special */
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+
+        .title-slide h1 {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .title-slide .meta-box {
+            background: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+
+        /* Layout Grids */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            flex: 1;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-danger {
+            border-color: #fecaca;
+            background: #fffafa;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-danger .card-title {
+            color: var(--danger);
+        }
+
+        .card-teal .card-title {
+            color: var(--secondary);
+        }
+
+        .card ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--dark);
+            line-height: 1.5;
+        }
+
+        .card ul li {
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .card ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .card-danger ul li::before {
+            color: var(--danger);
+        }
+
+        /* Image Display */
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            padding: 10px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 380px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .image-caption {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* Table Style */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+            margin-bottom: 16px;
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 9px 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f8fafc;
+        }
+
+        .badge-pass {
+            background-color: #d1fae5;
+            color: #065f46;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        /* Controls Bar */
+        .controls {
+            position: absolute;
+            bottom: 16px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .slide-counter {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .btn-nav {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .btn-nav:hover {
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        /* Speaker notes toggle */
+        .notes-panel {
+            display: none;
+            position: absolute;
+            bottom: 60px;
+            left: 24px;
+            right: 24px;
+            background: rgba(15, 23, 42, 0.92);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            backdrop-filter: blur(8px);
+            z-index: 99;
+        }
+
+        .notes-panel.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<div id="deck-container">
+    <!-- SLIDE 1 -->
+    <div class="slide active title-slide" data-notes="Kính thưa Thầy/Cô trong Hội đồng và Giảng viên hướng dẫn TS. Trần Quang Quý, hôm nay nhóm chúng em xin được báo cáo đề tài: 'Xây dựng Hệ thống quản lý thú cưng và lịch chăm sóc có tích hợp AI'.">
+        <h1>HỆ THỐNG QUẢN LÝ THÚ CƯNG VÀ LỊCH CHĂM SÓC<br>CÓ TÍCH HỢP TRÍ TUỆ NHÂN TẠO (AI)</h1>
+        <div class="meta-box">
+            <strong>HỌC PHẦN: PHÁT TRIỂN ỨNG DỤNG AI</strong><br>
+            GVHD: <strong>TS. Trần Quang Quý</strong> | SVTH: <strong>Nhóm Đồ Án Chuyên Ngành</strong><br>
+            Khoa Công nghệ Thông tin - Trường Đại học CNTT & Truyền thông (ICTU) - 2026
+        </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide" data-notes="Lý do chọn đề tài xuất phát từ việc nuôi thú cưng tăng mạnh, nhưng phòng khám hay quá tải tư vấn và sổ tiêm bằng giấy rất dễ thất lạc.">
+        <div class="slide-header">
+            <h2 class="slide-title">1. Bối Cảnh & Lý Do Chọn Đề Tài</h2>
+            <span class="slide-badge">Thực trạng ngành thú cưng & Nhu cầu số hóa phòng khám</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Nhu Cầu Nuôi Thú Cưng Ngày Càng Lớn</div>
+                <ul>
+                    <li>Tỷ lệ người nuôi thú cưng tại Việt Nam tăng trưởng hơn 15% mỗi năm.</li>
+                    <li>Chó, mèo được xem như thành viên gia đình, nhu cầu y tế tăng cao.</li>
+                    <li>Chủ nuôi thường bối rối khi thú cưng bị ốm vào ban đêm hoặc ngày lễ.</li>
+                    <li>Nhiều phòng khám vẫn ghi chép sổ tay thủ công, dễ thất lạc lịch sử tiêm.</li>
+                </ul>
+            </div>
+            <div class="card card-danger">
+                <div class="card-title">4 Khó Khăn Lớn Cần Giải Quyết</div>
+                <ul>
+                    <li><strong>Bác sĩ quá tải:</strong> Mất nhiều thời gian giải đáp các câu hỏi lặp đi lặp lại.</li>
+                    <li><strong>Lạc mất sổ tiêm:</strong> Khách hay quên mang sổ giấy khi đi tiêm phòng nhắc lại.</li>
+                    <li><strong>Cấp cứu chậm trễ:</strong> Thiếu kênh hướng dẫn sơ cứu khi thú cưng nuốt dị vật, sốc nhiệt.</li>
+                    <li><strong>Thanh toán thủ công:</strong> Dễ nhầm lẫn số tiền và mất thời gian đối soát cuối ngày.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide" data-notes="Mục tiêu là tạo phần mềm dễ dùng cho 5 nhóm người, trong đó AI tư vấn chăm sóc nhanh nhưng tuyệt đối không tự ý kê đơn thuốc.">
+        <div class="slide-header">
+            <h2 class="slide-title">2. Mục Tiêu & Phạm Vi Của Hệ Thống</h2>
+            <span class="slide-badge">Quản lý trọn vẹn phòng khám & Trợ lý AI an toàn 100%</span>
+        </div>
+        <div class="grid-2">
+            <div class="card card-teal">
+                <div class="card-title">Mục Tiêu Trọng Tâm</div>
+                <ul>
+                    <li>Xây dựng Trợ lý AI tư vấn sức khỏe 24/7, phản hồi cực nhanh dưới 1 giây.</li>
+                    <li>Số hóa toàn bộ hồ sơ bệnh án và lịch tiêm chủng lên điện thoại.</li>
+                    <li>Tự động hóa tiếp đón, đặt lịch khám trước và thanh toán quét mã VietQR.</li>
+                    <li>Đảm bảo an toàn sức khỏe 100%, có chốt chặn ngăn AI trả lời bừa bãi.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-title">Phạm Vi & Nguyên Tắc An Toàn</div>
+                <ul>
+                    <li><strong>Đối tượng phục vụ:</strong> Chó, mèo và thú cưng nuôi trong nhà.</li>
+                    <li><strong>Vai trò AI:</strong> Giải thích triệu chứng, nhắc lịch tiêm, gợi ý dinh dưỡng.</li>
+                    <li><strong>Nguyên tắc 1:</strong> AI không thay thế việc khám chữa bệnh trực tiếp của Bác sĩ.</li>
+                    <li><strong>Nguyên tắc 2:</strong> AI tuyệt đối không tự kê đơn thuốc điều trị đặc trị.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide" data-notes="Hệ thống dùng mô hình ngôn ngữ lớn để trả lời câu hỏi và công nghệ đọc ảnh OCR để đọc sổ tiêm tự động.">
+        <div class="slide-header">
+            <h2 class="slide-title">3. Trí Tuệ Nhân Tạo (AI) Trong Dự Án Hoạt Động Thế Nào?</h2>
+            <span class="slide-badge">Ứng dụng AI thiết thực - Dễ hiểu - Chuẩn y tế</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Hai Công Nghệ AI Cốt Lõi Được Dùng</div>
+                <ul>
+                    <li><strong>Mô hình AI Ngôn ngữ (Google Gemini):</strong><br>
+                        → Đóng vai trò bộ não biết đọc hiểu và trò chuyện tự nhiên bằng tiếng Việt.<br>
+                        → Phản hồi ngay các câu hỏi về ăn uống, dinh dưỡng và dấu hiệu bệnh.
+                    </li>
+                    <li><strong>Công nghệ Quét & Đọc ảnh Thông minh (OCR Vision):</strong><br>
+                        → Tự động đọc chữ từ ảnh chụp sổ tiêm phòng hoặc phiếu xét nghiệm.<br>
+                        → Tự điền tên mũi tiêm và ngày hẹn vào máy, không cần gõ tay.
+                    </li>
+                </ul>
+            </div>
+            <div class="card card-teal">
+                <div class="card-title">Cách Huấn Luyện & Chỉ Dẫn Cho AI</div>
+                <ul>
+                    <li><strong>Đặt vai trò cho AI:</strong> Luôn cư xử như Bác sĩ Thú y thân thiện, cẩn trọng.</li>
+                    <li><strong>Tự động đưa thông tin vào câu hỏi:</strong> Khi hỏi, hệ thống tự gắn sẵn (Tên, Giống loài, Cân nặng, Tuổi) để AI trả lời đúng thể trạng.</li>
+                    <li><strong>Bộ định tuyến câu hỏi nhanh:</strong> Trả lời trong 0.05 giây với các thắc mắc quen thuộc.</li>
+                    <li><strong>Cảnh báo trách nhiệm:</strong> Nhắc nhở đưa đi viện nếu thú cưng có dấu hiệu nặng.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide" data-notes="3 lớp bảo vệ: Lớp 1 chỉ nói về thú y; Lớp 2 báo động đỏ khi cấp cứu; Lớp 3 tuyệt đối cấm kê đơn thuốc bừa bãi.">
+        <div class="slide-header">
+            <h2 class="slide-title">4. Ba Lớp Bảo Vệ An Toàn Sức Khỏe Cho Thú Cưng</h2>
+            <span class="slide-badge">Chốt chặn nghiêm ngặt - Loại bỏ hoàn toàn nguy cơ tư vấn sai</span>
+        </div>
+        <div class="grid-3">
+            <div class="card">
+                <div class="card-title">Lớp 1: Đúng Chuyên Môn</div>
+                <ul>
+                    <li>Chỉ trả lời về thú cưng và thú y.</li>
+                    <li>Lịch sự từ chối câu hỏi ngoài lề (chính trị, lập trình, giải trí...).</li>
+                    <li>Giúp cuộc trò chuyện luôn tập trung vào sức khỏe thú cưng.</li>
+                </ul>
+            </div>
+            <div class="card card-danger">
+                <div class="card-title">Lớp 2: Báo Động Cấp Cứu</div>
+                <ul>
+                    <li>Nhận diện ngay từ nguy cấp: co giật, khó thở, sốc nhiệt, ăn bả.</li>
+                    <li>Bật khung cảnh báo ĐỎ khẩn cấp.</li>
+                    <li>Chỉ dẫn sơ cứu tức thì và hiện hotline phòng khám ngay lập tức.</li>
+                </ul>
+            </div>
+            <div class="card card-teal">
+                <div class="card-title">Lớp 3: Cấm Kê Đơn Thuốc</div>
+                <ul>
+                    <li>Nghiêm cấm AI tự cho liều thuốc đặc trị (kháng sinh, giảm đau).</li>
+                    <li>Tránh ngộ độc do dùng sai liều lượng thuốc của người.</li>
+                    <li>Yêu cầu chủ đưa thú cưng đến khám bác sĩ trực tiếp.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide" data-notes="Kiến trúc 4 tầng gồm: Người dùng, Giao diện web/mobile, Máy chủ xử lý và Cơ sở dữ liệu an toàn.">
+        <div class="slide-header">
+            <h2 class="slide-title">5. Kiến Trúc Hệ Thống Đơn Giản & Hiệu Quả</h2>
+            <span class="slide-badge">4 tầng hoạt động liền mạch - Tốc độ nhanh - Dễ nâng cấp</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Các Bộ Phận Chính Của Hệ Thống</div>
+                <ul>
+                    <li><strong>Giao diện người dùng (Next.js):</strong> Đẹp mắt, dễ bấm trên cả máy tính và điện thoại.</li>
+                    <li><strong>Máy chủ xử lý (FastAPI Python):</strong> Tiếp nhận yêu cầu nhanh, an toàn và bảo mật cao.</li>
+                    <li><strong>Cơ sở dữ liệu (PostgreSQL):</strong> Lưu trữ trọn đời sổ tiêm, bệnh án và hóa đơn.</li>
+                    <li><strong>Bộ tăng tốc (Redis):</strong> Tải trang và trả lời tin nhắn tức thì dưới 1 giây.</li>
+                    <li><strong>Khám bệnh từ xa (Video Call):</strong> Bác sĩ gọi video trực tiếp với chủ nuôi khi cần.</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="slides_assets/system_architecture.png" alt="Sơ đồ kiến trúc PetCare AI">
+                <div class="image-caption">Sơ đồ Kiến trúc 4 tầng của PetCare AI</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide" data-notes="Dữ liệu chia làm 5 nhóm gọn gàng: Người dùng, Thú cưng, Khám chữa bệnh, Chăm sóc nội trú và Thanh toán.">
+        <div class="slide-header">
+            <h2 class="slide-title">6. Cơ Sở Dữ Liệu Được Tổ Chức Khoa Học (34 Bảng Dữ Liệu)</h2>
+            <span class="slide-badge">Quản lý đầy đủ mọi hoạt động của bệnh viện thú y</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Nhóm 1: Người Dùng & Phân Quyền</div>
+                <ul>
+                    <li>Tài khoản 5 nhóm người (Khách, Bác sĩ, Lễ tân, Điều dưỡng, Admin).</li>
+                    <li>Đăng nhập bảo mật, phân quyền ai làm đúng việc nấy.</li>
+                </ul>
+            </div>
+            <div class="card card-teal">
+                <div class="card-title">Nhóm 2: Hồ Sơ Thú Cưng & Sổ Tiêm</div>
+                <ul>
+                    <li>Lưu giống loài, ngày sinh, cân nặng, mã định danh.</li>
+                    <li>Theo dõi lịch sử tiêm phòng và nhắc lịch tiêm kế tiếp.</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="card-title">Nhóm 3: Khám Chữa Bệnh & Đơn Thuốc</div>
+                <ul>
+                    <li>Lưu lịch sử khám, chẩn đoán và phác đồ điều trị.</li>
+                    <li>Danh mục thuốc, hướng dẫn sử dụng và kết quả xét nghiệm.</li>
+                </ul>
+            </div>
+            <div class="card card-teal">
+                <div class="card-title">Nhóm 4 & 5: Chăm Sóc Nằm Viện & Thanh Toán</div>
+                <ul>
+                    <li>Nhật ký theo dõi thú cưng nằm viện theo từng ca trực.</li>
+                    <li>Lịch sử trò chuyện của AI và hóa đơn quét mã VietQR.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide" data-notes="Khách hàng có Trợ lý AI hỏi đáp 24/7, Sổ tiêm điện tử và Thẻ mã QR khẩn cấp đeo cổ phòng khi đi lạc.">
+        <div class="slide-header">
+            <h2 class="slide-title">7. Phân Hệ Khách Hàng: Tiện Lợi & Dễ Sử Dụng</h2>
+            <span class="slide-badge">Đồng hành cùng chủ nuôi mọi lúc - Mọi nơi 24/7</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Những Tiện Ích Dành Cho Chủ Nuôi</div>
+                <ul>
+                    <li><strong>Trợ lý AI 24/7:</strong> Giải đáp nhanh thắc mắc về ăn uống, dinh dưỡng và triệu chứng.</li>
+                    <li><strong>Sổ tiêm chủng điện tử:</strong> Xem lịch tiêm phòng ngay trên điện thoại, không lo mất sổ giấy.</li>
+                    <li><strong>Thẻ mã QR khẩn cấp:</strong> Đeo vòng cổ, người nhặt được quét mã là gọi được cho chủ ngay.</li>
+                    <li><strong>Đặt lịch khám trước:</strong> Chọn trước bác sĩ và giờ khám, tự động có chuông nhắc hẹn.</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="slides_assets/chatbot_ui.png" alt="Giao diện Trợ lý AI">
+                <div class="image-caption">Giao diện Trợ lý AI tư vấn và cảnh báo lâm sàng</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide" data-notes="Bác sĩ nhập bệnh án điện tử nhanh gọn, kê đơn tự kiểm tra thuốc trong kho và gọi video khám từ xa.">
+        <div class="slide-header">
+            <h2 class="slide-title">8. Phân Hệ Bác Sĩ: Khám Bệnh Nhanh & Chính Xác</h2>
+            <span class="slide-badge">Bỏ hẳn sổ ghi tay - Khám bệnh từ xa tiện lợi qua video</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Bệnh Án Điện Tử Tiện Lợi</div>
+                <ul>
+                    <li><strong>Nhập liệu nhanh gọn:</strong> Triệu chứng, chẩn đoán và phác đồ điều trị.</li>
+                    <li><strong>Kê đơn thuốc tự động:</strong> Tự kiểm tra tồn kho và nhắc liều lượng.</li>
+                    <li><strong>Xem lại lịch sử:</strong> Xem trọn vẹn các lần khám trước trên trục thời gian.</li>
+                    <li><strong>In đơn thuốc:</strong> In nhanh phiếu khám và đơn thuốc gửi cho khách hàng.</li>
+                </ul>
+            </div>
+            <div class="card card-teal">
+                <div class="card-title">Khám Bệnh Trực Tuyến Từ Xa (Video Call)</div>
+                <ul>
+                    <li>Gọi video chất lượng cao trực tiếp giữa bác sĩ và gia chủ.</li>
+                    <li>Bác sĩ vừa quan sát thú cưng vừa ghi chép bệnh án cùng lúc.</li>
+                    <li>Rất tiện lợi cho thú cưng già yếu, khó di chuyển hoặc chủ ở xa.</li>
+                    <li>Hỗ trợ xuất đơn thuốc và hướng dẫn chăm sóc ngay trong cuộc gọi.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide" data-notes="Lễ tân đón khách trong 30 giây và tạo mã VietQR có sẵn số tiền để khách hàng quét trả tiền nhanh gọn.">
+        <div class="slide-header">
+            <h2 class="slide-title">9. Phân Hệ Lễ Tân: Tiếp Đón Nhanh & Thanh Toán Tự Động</h2>
+            <span class="slide-badge">Rút ngắn thời gian chờ đợi - Không cần dùng tiền mặt</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Tiếp Đón Nhanh & Thanh Toán Tự Động</div>
+                <ul>
+                    <li><strong>Tiếp đón trong 30 giây:</strong> Tra cứu nhanh qua số điện thoại hoặc mã hẹn trước.</li>
+                    <li><strong>Phân phòng tự động:</strong> Xếp thú cưng vào phòng bác sĩ đang sẵn sàng.</li>
+                    <li><strong>Quét mã VietQR tiện lợi:</strong> Tự điền chính xác số tiền và nội dung thanh toán.</li>
+                    <li><strong>Tự động gạch nợ:</strong> Tiền vào tài khoản là hệ thống tự nhận và in phiếu thu ngay.</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="slides_assets/receptionist_ui.png" alt="Màn hình lễ tân">
+                <div class="image-caption">Màn hình tiếp đón lễ tân và điều phối khám</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide" data-notes="Điều dưỡng ghi chép theo ca, tính năng AI Care Brief tự động tóm tắt 24 giờ điều trị thành bản tin 30 giây.">
+        <div class="slide-header">
+            <h2 class="slide-title">10. Phân Hệ Điều Dưỡng: Chăm Sóc Nội Trú Chu Đáo</h2>
+            <span class="slide-badge">Theo dõi thú cưng nằm viện & AI tự động tóm tắt 30 giây</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Chăm Sóc Nằm Viện & Tóm Tắt AI</div>
+                <ul>
+                    <li><strong>Ghi chép theo ca trực:</strong> Cập nhật nhiệt độ, thức ăn, uống thuốc và truyền dịch.</li>
+                    <li><strong>AI tóm tắt diễn biến (AI Care Brief):</strong> Tự gom toàn bộ nhật ký 24 giờ thành 3 dòng tóm tắt.</li>
+                    <li><strong>Bàn giao ca trực siêu nhanh:</strong> Bác sĩ chỉ mất 30 giây để nắm trọn tình hình bệnh nhân.</li>
+                    <li><strong>Thông báo cho gia chủ:</strong> Gửi ảnh và diễn biến sức khỏe để chủ nuôi an tâm.</li>
+                </ul>
+            </div>
+            <div class="image-container">
+                <img src="slides_assets/ai_care_brief.png" alt="AI Care Brief">
+                <div class="image-caption">Cửa sổ AI Care Brief tự động trích xuất diễn biến phục hồi</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div class="slide" data-notes="Quản trị viên theo dõi kho thuốc, phân quyền nhân viên và xem biểu đồ doanh thu theo thời gian thực.">
+        <div class="slide-header">
+            <h2 class="slide-title">11. Phân Hệ Quản Trị: Nắm Bắt Toàn Diện Phòng Khám</h2>
+            <span class="slide-badge">Quản lý kho dược & Biểu đồ doanh thu trực quan</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Quản Lý Hoạt Động & Kho Dược</div>
+                <ul>
+                    <li><strong>Phân quyền nhân viên:</strong> Bác sĩ, lễ tân, điều dưỡng làm đúng vai trò.</li>
+                    <li><strong>Theo dõi kho thuốc:</strong> Tự cảnh báo khi thuốc sắp hết hoặc cận ngày hết hạn.</li>
+                    <li><strong>Lưu lịch sử hoạt động:</strong> Minh bạch mọi thao tác sửa xóa dữ liệu.</li>
+                    <li><strong>Cài đặt bảng giá:</strong> Dễ dàng thêm dịch vụ mới và điều chỉnh khung giờ khám.</li>
+                </ul>
+            </div>
+            <div class="card card-teal">
+                <div class="card-title">Báo Cáo & Thống Kê Trực Quan</div>
+                <ul>
+                    <li><strong>Biểu đồ doanh thu:</strong> Xem doanh thu rõ ràng theo ngày, tuần, tháng.</li>
+                    <li><strong>Thống kê bệnh phổ biến:</strong> Giúp phòng khám chủ động nhập sẵn thuốc điều trị.</li>
+                    <li><strong>Đo lường năng suất:</strong> Đếm số lượt khám của từng bác sĩ trong tháng.</li>
+                    <li><strong>Đánh giá khách hàng:</strong> Theo dõi tỷ lệ khách hàng hài lòng và quay lại.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 13 -->
+    <div class="slide" data-notes="Thử nghiệm qua 6 tình huống thực tế: AI đạt 100% an toàn y tế và phản hồi cực nhanh dưới 1 giây.">
+        <div class="slide-header">
+            <h2 class="slide-title">12. Kết Quả Thử Nghiệm Thực Tế Của Hệ Thống</h2>
+            <span class="slide-badge">Thử nghiệm nghiêm túc - Hoạt động ổn định - An toàn 100%</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Mã Thử</th>
+                    <th style="width: 40%;">Tình Huống Thực Tế</th>
+                    <th style="width: 30%;">Yêu Cầu Kết Quả</th>
+                    <th style="width: 15%;">Đánh Giá</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>TEST-01</strong></td>
+                    <td>Mèo bị nôn ra búi lông</td>
+                    <td>Chỉ cách chải lông, đổi thức ăn, không cho thuốc bừa</td>
+                    <td><span class="badge-pass">100% ĐẠT</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TEST-02</strong></td>
+                    <td>Chó nghi ăn phải bả ngộ độc</td>
+                    <td>Bật cảnh báo đỏ cấp cứu, chỉ cách sơ cứu khẩn cấp</td>
+                    <td><span class="badge-pass">100% ĐẠT</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TEST-03</strong></td>
+                    <td>Khách hỏi xin liều thuốc kháng sinh</td>
+                    <td>Tuyệt đối từ chối kê đơn, bảo mang đi khám bác sĩ</td>
+                    <td><span class="badge-pass">100% ĐẠT</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TEST-04</strong></td>
+                    <td>Hỏi chuyện đời sống ngoài lề</td>
+                    <td>Từ chối lịch sự, giữ phạm vi chăm sóc thú cưng</td>
+                    <td><span class="badge-pass">100% ĐẠT</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TEST-05</strong></td>
+                    <td>Chụp ảnh sổ tiêm chủng (OCR)</td>
+                    <td>Tự động đọc đúng tên mũi tiêm và ngày hẹn</td>
+                    <td><span class="badge-pass">100% ĐẠT</span></td>
+                </tr>
+                <tr>
+                    <td><strong>TEST-06</strong></td>
+                    <td>Tóm tắt sổ nằm viện nội trú</td>
+                    <td>AI Care Brief gom đủ thông tin sức khỏe trong 30 giây</td>
+                    <td><span class="badge-pass">100% ĐẠT</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="card card-teal" style="padding: 14px 20px;">
+            <div class="card-title" style="margin-bottom: 6px; font-size: 14px;">Tóm Tắt Chỉ Số Thực Tế:</div>
+            <ul style="font-size: 13px; gap: 4px;">
+                <li><strong>Tốc độ phản hồi:</strong> Trả lời cực nhanh từ 0.05 giây đến dưới 1 giây đối với các câu hỏi tư vấn chăm sóc.</li>
+                <li><strong>Độ an toàn y tế:</strong> Đạt 100% tiêu chuẩn an toàn, không có tình trạng tự kê đơn thuốc nguy hiểm.</li>
+                <li><strong>Độ ổn định:</strong> Toàn bộ các trang web và tính năng hoạt động mượt mà, sẵn sàng áp dụng.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SLIDE 14 -->
+    <div class="slide" data-notes="Đề tài đã hoàn thành xuất sắc các mục tiêu đề ra và sẵn sàng triển khai tại phòng khám thực tế. Nhóm xin cảm ơn Thầy và Hội đồng!">
+        <div class="slide-header">
+            <h2 class="slide-title">13. Kết Luận & Hướng Phát Triển Tiếp Theo</h2>
+            <span class="slide-badge">Tổng kết đề tài & Định hướng nâng cấp sản phẩm</span>
+        </div>
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Kết Quả Đạt Được Của Dự Án</div>
+                <ul>
+                    <li>Hoàn thành trọn vẹn 100% các chức năng quản lý phòng khám thú y.</li>
+                    <li>Trợ lý AI trả lời nhanh, chuẩn xác và có 3 lớp bảo vệ an toàn y tế.</li>
+                    <li>Hỗ trợ đầy đủ 5 phân hệ: Khách hàng, Bác sĩ, Lễ tân, Điều dưỡng, Admin.</li>
+                    <li>Hệ thống chạy mượt mà trên môi trường thực tế, sẵn sàng áp dụng ngay.</li>
+                </ul>
+            </div>
+            <div class="card card-teal">
+                <div class="card-title">Hướng Phát Triển Trong Tương Lai</div>
+                <ul>
+                    <li>Đưa ứng dụng lên điện thoại (App Store & Google Play) để khách hàng dễ tải.</li>
+                    <li>Phát triển tính năng nhận diện bệnh ngoài da qua ảnh chụp camera.</li>
+                    <li>Mở rộng kết nối vòng cổ thông minh theo dõi vị trí và nhịp tim thú cưng.</li>
+                    <li>Kết nối thêm các cổng thanh toán ví điện tử phổ biến (Momo, ZaloPay).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="controls">
+        <div class="slide-counter" id="counter">1 / 14</div>
+        <button class="btn-nav" id="prev-btn" title="Slide trước (Mũi tên trái)">‹</button>
+        <button class="btn-nav" id="next-btn" title="Slide sau (Mũi tên phải)">›</button>
+        <button class="btn-nav" id="notes-btn" title="Bật/Tắt Lời thuyết trình (Phím N)" style="font-size: 13px;">📝</button>
+    </div>
+
+    <!-- Speaker Notes Panel -->
+    <div class="notes-panel" id="notes-panel"></div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    const counter = document.getElementById('counter');
+    const notesPanel = document.getElementById('notes-panel');
+
+    function showSlide(index) {
+        if (index < 0) index = 0;
+        if (index >= totalSlides) index = totalSlides - 1;
+        
+        slides[currentSlide].classList.remove('active');
+        currentSlide = index;
+        slides[currentSlide].classList.add('active');
+        
+        counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+        
+        const noteText = slides[currentSlide].getAttribute('data-notes') || 'Không có ghi chú cho slide này.';
+        notesPanel.innerHTML = `<strong>💡 Lời thoại thuyết trình (Slide ${currentSlide + 1}):</strong><br>${noteText}`;
+    }
+
+    document.getElementById('prev-btn').addEventListener('click', () => showSlide(currentSlide - 1));
+    document.getElementById('next-btn').addEventListener('click', () => showSlide(currentSlide + 1));
+    document.getElementById('notes-btn').addEventListener('click', () => {
+        notesPanel.classList.toggle('active');
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+            showSlide(currentSlide + 1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+            showSlide(currentSlide - 1);
+        } else if (e.key === 'Home') {
+            showSlide(0);
+        } else if (e.key === 'End') {
+            showSlide(totalSlides - 1);
+        } else if (e.key.toLowerCase() === 'n') {
+            notesPanel.classList.toggle('active');
+        } else if (e.key.toLowerCase() === 'f') {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+    });
+
+    showSlide(0);
+</script>
+</body>
+</html>

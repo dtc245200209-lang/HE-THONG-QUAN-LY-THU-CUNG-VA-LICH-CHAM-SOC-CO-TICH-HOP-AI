@@ -9,21 +9,21 @@ def create_deck():
     template_path = "/app/template_ictu.pptx"
     prs = Presentation(template_path)
     
-    # Palette matching ICTU academic branding
-    COLOR_PRIMARY = RGBColor(14, 56, 122)     # ICTU Deep Blue #0e387a
-    COLOR_SECONDARY = RGBColor(13, 148, 136) # Medical Teal #0d9488
-    COLOR_DARK = RGBColor(30, 41, 59)        # Slate Dark #1e293b
-    COLOR_MUTED = RGBColor(100, 116, 139)    # Slate Muted #64748b
-    COLOR_CARD_BG = RGBColor(248, 250, 252)  # Card Soft Gray #f8fafc
-    COLOR_BORDER = RGBColor(203, 213, 225)   # Border #cbd5e1
+    # Bảng màu chuẩn nhận diện Đại học CNTT & Truyền thông (ICTU)
+    COLOR_PRIMARY = RGBColor(14, 56, 122)     # Xanh đậm ICTU #0e387a
+    COLOR_SECONDARY = RGBColor(13, 148, 136) # Xanh y tế #0d9488
+    COLOR_DARK = RGBColor(30, 41, 59)        # Xám đen dễ đọc #1e293b
+    COLOR_MUTED = RGBColor(100, 116, 139)    # Xám ghi #64748b
+    COLOR_CARD_BG = RGBColor(248, 250, 252)  # Nền thẻ mềm mại #f8fafc
+    COLOR_BORDER = RGBColor(203, 213, 225)   # Viền thẻ #cbd5e1
     COLOR_WHITE = RGBColor(255, 255, 255)
-    COLOR_GREEN = RGBColor(16, 185, 129)     # Success Green #10b981
-    COLOR_RED = RGBColor(220, 38, 38)        # Emergency Red #dc2626
-    COLOR_AMBER = RGBColor(217, 119, 6)      # Amber #d97706
+    COLOR_GREEN = RGBColor(16, 185, 129)     # Xanh lá an toàn #10b981
+    COLOR_RED = RGBColor(220, 38, 38)        # Đỏ cấp cứu #dc2626
+    COLOR_AMBER = RGBColor(217, 119, 6)      # Vàng cam #d97706
 
     FONT_FAMILY = "Arial"
 
-    # Helper function to style text frame
+    # Định dạng văn bản nhất quán
     def set_font(p, size_pt, bold=False, color_rgb=COLOR_DARK, align=PP_ALIGN.LEFT):
         p.font.name = FONT_FAMILY
         p.font.size = Pt(size_pt)
@@ -31,34 +31,35 @@ def create_deck():
         p.font.color.rgb = color_rgb
         p.alignment = align
 
-    # Slide 1: Trang tiêu đề (Sử dụng Slide 0 từ template ICTU)
+    # =========================================================================
+    # SLIDE 1: TRANG TIÊU ĐỀ
+    # =========================================================================
     slide0 = prs.slides[0]
     title_box = slide0.placeholders[0]
-    title_box.text = "PETCARE AI - HỆ THỐNG QUẢN LÝ PHÒNG KHÁM\n& TRỢ LÝ AI CHĂM SÓC THÚ CƯNG TOÀN DIỆN"
+    title_box.text = "HỆ THỐNG QUẢN LÝ THÚ CƯNG VÀ LỊCH CHĂM SÓC\nCÓ TÍCH HỢP TRÍ TUỆ NHÂN TẠO (AI)"
     for p in title_box.text_frame.paragraphs:
         set_font(p, 20, bold=True, color_rgb=COLOR_PRIMARY, align=PP_ALIGN.CENTER)
         
     sub_box = slide0.placeholders[1]
-    sub_box.text = "HỌC PHẦN: PHÁT TRIỂN ỨNG DỤNG AI\nGVHD: TS. Trần Quang Quý | SVTH: Nhóm Đồ Án Chuyên Ngành\nKhoa Công nghệ Thông tin - Đại học CNTT & Truyền thông (ICTU) - 2026"
+    sub_box.text = "HỌC PHẦN: PHÁT TRIỂN ỨNG DỤNG AI\nGVHD: TS. Trần Quang Quý | Sinh viên thực hiện: Nhóm Đồ Án Chuyên Ngành\nKhoa Công nghệ Thông tin - Trường Đại học CNTT & Truyền thông (ICTU) - 2026"
     for p in sub_box.text_frame.paragraphs:
         set_font(p, 12, bold=False, color_rgb=COLOR_DARK, align=PP_ALIGN.CENTER)
 
     slide0.notes_slide.notes_text_frame.text = (
         "Kính thưa Thầy/Cô trong Hội đồng và Giảng viên hướng dẫn TS. Trần Quang Quý, "
-        "hôm nay nhóm chúng em xin phép được trình bày báo cáo đề tài đồ án môn học "
-        "Phát triển ứng dụng AI với đề tài: 'Xây dựng hệ thống quản lý phòng khám thú y "
-        "và Trợ lý AI chăm sóc thú cưng toàn diện - PetCare AI'."
+        "hôm nay nhóm chúng em xin được báo cáo đề tài: 'Xây dựng Hệ thống quản lý thú cưng "
+        "và lịch chăm sóc có tích hợp AI'. Hệ thống được phát triển nhằm giải quyết trọn vẹn "
+        "nhu cầu quản lý của phòng khám thú y và hỗ trợ chăm sóc sức khỏe thú cưng cho khách hàng 24/7."
     )
 
-    # Function to create standard content slide
+    # Hàm tạo slide nội dung chuẩn
     def add_standard_slide(title_text, subtitle_badge="", speaker_notes=""):
-        slide = prs.slides.add_slide(prs.slide_layouts[4]) # Layout 'Nur Titel' (Title Only)
+        slide = prs.slides.add_slide(prs.slide_layouts[4])
         title_box = slide.placeholders[0]
         title_box.text = title_text
         for p in title_box.text_frame.paragraphs:
             set_font(p, 18, bold=True, color_rgb=COLOR_PRIMARY)
         
-        # Subtitle badge if specified
         if subtitle_badge:
             tx = slide.shapes.add_textbox(Inches(0.6), Inches(0.72), Inches(8.8), Inches(0.28))
             tf = tx.text_frame
@@ -106,252 +107,283 @@ def create_deck():
                 p.text = caption
                 set_font(p, 8.5, color_rgb=COLOR_MUTED, align=PP_ALIGN.CENTER)
 
-    # Slide 2: Bối cảnh & Tính cấp thiết (Tận dụng slide 1 của template)
+    # =========================================================================
+    # SLIDE 2: BỐI CẢNH & TÍNH CẤP THIẾT
+    # =========================================================================
     slide1 = prs.slides[1]
     title1 = slide1.placeholders[0]
-    title1.text = "1. Bối cảnh & Tính cấp thiết của Đề tài"
+    title1.text = "1. Bối Cảnh & Lý Do Chọn Đề Tài"
     for p in title1.text_frame.paragraphs:
         set_font(p, 18, bold=True, color_rgb=COLOR_PRIMARY)
         
     sp = slide1.placeholders[1]._element
-    sp.getparent().remove(sp) # remove generic bullet placeholder
+    sp.getparent().remove(sp)
     
     add_card(slide1, Inches(0.6), Inches(1.1), Inches(4.3), Inches(3.4), 
-             "Thực trạng ngành Thú cưng & Y tế Thú y", 
+             "Nhu Cầu Nuôi Thú Cưng Ngày Càng Lớn", 
              [
-                 "Tăng trưởng thị trường: Tỷ lệ nuôi thú cưng tại Việt Nam tăng >15%/năm.",
-                 "Nhu cầu y tế bùng nổ: Gia tăng mạnh nhu cầu phòng dịch, tiêm phòng và điều trị bệnh.",
-                 "Khoảng trống kiến thức: Chủ nuôi thường lúng túng khi xử lý sơ cứu ngộ độc, sốc nhiệt.",
-                 "Hiện trạng phòng khám: Đa số cơ sở vừa và nhỏ vẫn ghi sổ tay hoặc dùng file Excel phân mảnh."
+                 "Số lượng người nuôi thú cưng tại Việt Nam tăng trưởng hơn 15% mỗi năm.",
+                 "Chó, mèo được xem như thành viên trong gia đình, nhu cầu y tế tăng cao.",
+                 "Chủ nuôi thường bối rối khi thú cưng bị ốm vào ban đêm hoặc ngày lễ.",
+                 "Nhiều phòng khám vẫn ghi chép sổ sách thủ công, dễ thất lạc lịch sử tiêm."
              ])
     add_card(slide1, Inches(5.1), Inches(1.1), Inches(4.3), Inches(3.4), 
-             "4 Điểm nghẽn Cốt lõi cần Giải quyết", 
+             "4 Khó Khăn Lớn Cần Giải Quyết", 
              [
-                 "Quá tải tư vấn: Đội ngũ y tế mất nhiều thời gian trả lời câu hỏi lặp lại.",
-                 "Bệnh án phân tán: Thiếu lịch sử tiêm phòng, dị ứng thuốc khi đổi ca trực.",
-                 "Cấp cứu chậm trễ: Thiếu công cụ phân luồng khẩn cấp 24/7 ngoài giờ hành chính.",
-                 "Nhu cầu cấp thiết: Cần một nền tảng chuyển đổi số toàn diện tích hợp Trợ lý AI có kiểm duyệt y khoa."
+                 "Bác sĩ quá tải: Mất nhiều thời gian giải đáp các câu hỏi lặp đi lặp lại.",
+                 "Lạc mất sổ tiêm: Khách hay quên mang sổ giấy khi đi tiêm phòng nhắc lại.",
+                 "Cấp cứu chậm trễ: Chủ nuôi không biết sơ cứu ban đầu khi thú cưng nuốt dị vật, sốc nhiệt.",
+                 "Thanh toán thủ công: Dễ nhầm lẫn số tiền và mất thời gian đối soát cuối ngày."
              ], title_color=COLOR_RED, border_color=RGBColor(254, 202, 202))
 
     slide1.notes_slide.notes_text_frame.text = (
-        "Xuất phát từ thực tế thị trường thú cưng tăng trưởng trên 15% mỗi năm, các phòng khám thú y hiện nay "
-        "đang đối mặt với 4 điểm nghẽn lớn: quá tải tư vấn, bệnh án phân tán, thiếu công cụ cấp cứu kịp thời và "
-        "theo dõi nội trú rời rạc. Đề tài PetCare AI ra đời nhằm giải quyết triệt để các bài toán này."
+        "Lý do chọn đề tài xuất phát từ việc người nuôi thú cưng ngày càng đông, nhưng khi thú cưng ốm "
+        "thì chủ nuôi rất lo lắng và thiếu kiến thức sơ cứu. Về phía phòng khám, các bác sĩ thường quá tải "
+        "vì phải trả lời các câu hỏi chăm sóc quen thuộc và sổ tiêm bằng giấy rất dễ thất lạc. "
+        "Vì vậy, chúng em xây dựng phần mềm này để số hóa toàn diện quy trình và đưa Trợ lý AI vào hỗ trợ."
     )
 
-    # Slide 3: Mục tiêu & Phạm vi
+    # =========================================================================
+    # SLIDE 3: MỤC TIÊU & PHẠM VI HỆ THỐNG
+    # =========================================================================
     s3 = add_standard_slide(
-        "2. Mục tiêu & Phạm vi Nghiên cứu", 
-        "Xây dựng Hệ sinh thái Quản lý & Trợ lý Chuyên khoa",
-        "Mục tiêu cốt lõi của đề tài là xây dựng hệ thống quản lý chuẩn y khoa đi kèm Trợ lý AI tư vấn 24/7 dưới 650ms. Ranh giới hệ thống được xác định rõ: AI chỉ đóng vai trò hỗ trợ, không thay thế bác sĩ và không tự ý kê đơn thuốc."
+        "2. Mục Tiêu & Phạm Vi Của Hệ Thống", 
+        "Hệ thống Quản lý Toàn diện & Trợ lý AI Thông minh",
+        "Mục tiêu là tạo ra một phần mềm dễ dùng cho 5 nhóm người: Khách hàng, Bác sĩ, Lễ tân, Điều dưỡng và Quản lý. AI chỉ đóng vai trò hướng dẫn chăm sóc ban đầu, tuyệt đối không tự ý kê đơn thuốc để đảm bảo an toàn tuyệt đối."
     )
     add_card(s3, Inches(0.6), Inches(1.1), Inches(4.3), Inches(3.4),
-             "4 Mục tiêu Nghiên cứu Cụ thể",
+             "Mục Tiêu Trọng Tâm",
              [
-                 "Mục tiêu 1: Xây dựng Trợ lý AI tư vấn sức khỏe thú cưng 24/7 (Độ trễ <650ms).",
-                 "Mục tiêu 2: Số hóa toàn diện hồ sơ bệnh án điện tử (EMR) chuẩn phòng khám.",
-                 "Mục tiêu 3: Tối ưu quy trình vận hành (Lễ tân, Điều dưỡng, Telehealth, VietQR).",
-                 "Mục tiêu 4: Thiết lập Khung an toàn y khoa 3 chốt chặn, loại bỏ nguy cơ ảo giác."
+                 "Xây dựng Trợ lý AI tư vấn sức khỏe 24/7, trả lời cực nhanh dưới 1 giây.",
+                 "Số hóa toàn bộ hồ sơ bệnh án và lịch tiêm chủng lên điện thoại.",
+                 "Tự động hóa tiếp đón, đặt lịch khám và thanh toán quét mã QR.",
+                 "Đảm bảo an toàn sức khỏe 100%, có chốt chặn ngăn AI trả lời bừa bãi."
              ], title_color=COLOR_SECONDARY)
     add_card(s3, Inches(5.1), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Phạm vi & Ranh giới An toàn Y tế",
+             "Phạm Vi & Nguyên Tắc An Toàn",
              [
-                 "Đối tượng phục vụ: Chó, Mèo và các loài thú cưng phổ biến tại đô thị.",
-                 "Vai trò của AI: Tư vấn triệu chứng, phân luồng cấp cứu, giải thích bệnh án.",
-                 "Nguyên tắc 1: AI TUYỆT ĐỐI KHÔNG thay thế chẩn đoán chuyên sâu của Bác sĩ.",
-                 "Nguyên tắc 2: AI TUYỆT ĐỐI KHÔNG tự kê đơn hoạt chất đặc trị liều lượng cao."
+                 "Đối tượng chăm sóc: Chó, mèo và các loài thú cưng nuôi trong nhà.",
+                 "Vai trò của AI: Giải thích triệu chứng, nhắc lịch tiêm, hướng dẫn ăn uống.",
+                 "Nguyên tắc 1: AI không thay thế việc khám chữa bệnh trực tiếp của Bác sĩ.",
+                 "Nguyên tắc 2: AI tuyệt đối không tự kê đơn thuốc điều trị đặc trị."
              ])
 
-    # Slide 4: Cơ sở lý thuyết AI & SFT
+    # =========================================================================
+    # SLIDE 4: TRÍ TUỆ NHÂN TẠO (AI) HOẠT ĐỘNG THẾ NÀO?
+    # =========================================================================
     s4 = add_standard_slide(
-        "3. Cơ sở Lý thuyết: Transformer & Fine-Tuning",
-        "Nền tảng Công nghệ Trí tuệ Nhân tạo Hiện đại",
-        "Chúng em ứng dụng kiến trúc Transformer kết hợp cơ chế Multi-Head Attention và kỹ thuật Prompt Engineering y khoa. Hệ thống tự động nhúng thông tin giống loài, độ tuổi vào ngữ cảnh để câu trả lời mang tính cá nhân hóa cao nhất."
+        "3. Trí Tuệ Nhân Tạo (AI) Trong Dự Án Hoạt Động Thế Nào?",
+        "Ứng dụng AI Thiết thực - Dễ hiểu - Chuẩn Y tế",
+        "Hệ thống sử dụng mô hình ngôn ngữ lớn để hiểu câu hỏi của chủ nuôi và công nghệ đọc ảnh (OCR) để tự động nhận dạng sổ tiêm phòng. Khi nhận câu hỏi, hệ thống tự động đưa tên, tuổi, giống loài của bé cưng vào để câu trả lời chính xác nhất."
     )
     add_card(s4, Inches(0.6), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Kiến trúc Transformer & Mô hình LLM",
+             "Hai Công Nghệ AI Cốt Lõi Được Dùng",
              [
-                 "Cơ chế Multi-Head Self-Attention: Mô hình hóa mối quan hệ từ vựng và ngữ cảnh sâu.",
-                 "Lựa chọn Model: Google Gemini 2.5/3.8 Flash, GPT-4o-mini và Ollama Llama-3.",
-                 "Khả năng suy luận: Tận dụng Reasoning và In-context Learning để giải thích bệnh học.",
-                 "Multimodal Vision: Đọc hiểu và trích xuất dữ liệu từ ảnh chụp sổ tiêm qua OCR."
+                 "Mô hình Trí tuệ Nhân tạo Ngôn ngữ (Google Gemini):",
+                 "  → Đóng vai trò bộ não biết đọc hiểu và trò chuyện tự nhiên bằng tiếng Việt.",
+                 "  → Phản hồi ngay các câu hỏi về ăn uống, dinh dưỡng và dấu hiệu bệnh.",
+                 "Công nghệ Quét & Đọc ảnh Thông minh (OCR Vision):",
+                 "  → Tự động đọc chữ từ ảnh chụp sổ tiêm phòng hoặc phiếu xét nghiệm.",
+                 "  → Nhập tự động tên vắc-xin và ngày tiêm vào máy, không cần gõ tay."
              ])
     add_card(s4, Inches(5.1), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Kỹ thuật SFT & Tinh chỉnh Ngữ cảnh",
+             "Cách Huấn Luyện & Chỉ Dẫn Cho AI",
              [
-                 "System Prompt Engineering: Định hình persona Bác sĩ Thú y chuẩn mực, từ tốn.",
-                 "Dynamic Context Injection: Tự động nhúng Giống loài, Tuổi, Cân nặng vào câu hỏi.",
-                 "Clinical Guardrails: Kiểm duyệt đầu vào / đầu ra theo 6 tiêu chuẩn an toàn thú y.",
-                 "Cơ chế chuyển đổi (Failover): Tự động chuyển đổi giữa Cloud AI và Local AI an toàn."
+                 "Đặt vai trò cho AI:",
+                 "  → Luôn cư xử như một Bác sĩ Thú y thân thiện, cẩn thận và điềm tĩnh.",
+                 "Tự động bổ sung thông tin thú cưng:",
+                 "  → Khi hỏi, hệ thống tự gắn sẵn (Tên, Giống loài, Cân nặng, Tuổi) vào câu hỏi.",
+                 "Bộ định tuyến câu hỏi nhanh:",
+                 "  → Trả lời siêu tốc trong 0.05 giây với các câu hỏi thường gặp về chăm sóc.",
+                 "Cảnh báo trách nhiệm y tế:",
+                 "  → Luôn nhắc nhở chủ nuôi đưa thú cưng đến viện nếu có dấu hiệu nặng."
              ], title_color=COLOR_SECONDARY)
 
-    # Slide 5: Khung an toàn Y khoa 3 Chốt chặn
+    # =========================================================================
+    # SLIDE 5: 3 LỚP BẢO VỆ AN TOÀN SỨC KHỎE
+    # =========================================================================
     s5 = add_standard_slide(
-        "4. Khung An toàn Y khoa 3 Chốt chặn (Clinical Guardrails)",
-        "Đảm bảo Chuẩn mực Đạo đức & An toàn Sức khỏe Thú cưng",
-        "Điểm đột phá của dự án là bộ 3 chốt chặn an toàn: Chốt 1 sàng lọc phạm vi thú y, Chốt 2 kích hoạt cấp cứu tức thời khi phát hiện nguy kịch, Chốt 3 nghiêm cấm kê đơn thuốc kháng sinh bừa bãi."
+        "4. Ba Lớp Bảo Vệ An Toàn Sức Khỏe Cho Thú Cưng",
+        "Chốt Chặn Nghiêm Ngặt - Loại Bỏ Hoàn Toàn Nguy Cơ Tư Vấn Sai",
+        "Để tránh việc AI tư vấn sai gây nguy hiểm cho thú cưng, chúng em thiết kế 3 lớp bảo vệ tự động: Lớp 1 chỉ cho phép nói về thú y; Lớp 2 báo động đỏ khi có dấu hiệu nguy kịch; Lớp 3 nghiêm cấm kê đơn thuốc bừa bãi."
     )
     add_card(s5, Inches(0.6), Inches(1.1), Inches(2.8), Inches(3.4),
-             "Chốt 1: In-Scope Guard",
+             "Lớp 1: Đúng Chuyên Môn",
              [
-                 "Kiểm soát phạm vi hội thoại.",
-                 "Từ chối các chủ đề ngoài thú y (chính trị, code, tài chính,...).",
-                 "Bảo toàn tài nguyên AI phục vụ đúng nghiệp vụ y tế lâm sàng."
+                 "Chỉ trả lời về thú cưng và thú y.",
+                 "Lịch sự từ chối các câu hỏi lạc đề (chính trị, lập trình, giải trí,...).",
+                 "Giúp câu trả lời luôn tập trung vào sức khỏe thú cưng."
              ], title_color=COLOR_PRIMARY)
     add_card(s5, Inches(3.6), Inches(1.1), Inches(2.8), Inches(3.4),
-             "Chốt 2: Emergency Triage",
+             "Lớp 2: Báo Động Cấp Cứu",
              [
-                 "Nhận diện từ khóa nguy kịch (co giật, sốc nhiệt, xuất huyết).",
-                 "Kích hoạt trạng thái [KHẨN CẤP].",
-                 "Hướng dẫn sơ cứu tức thời và cung cấp số hotline phòng khám."
+                 "Nhận diện ngay các từ nguy cấp: co giật, khó thở, sốc nhiệt, ngộ độc bả.",
+                 "Bật khung cảnh báo ĐỎ khẩn cấp.",
+                 "Chỉ dẫn các bước sơ cứu tức thời và hiện số hotline phòng khám ngay."
              ], title_color=COLOR_RED, border_color=RGBColor(254, 202, 202))
     add_card(s5, Inches(6.6), Inches(1.1), Inches(2.8), Inches(3.4),
-             "Chốt 3: Non-Prescribe",
+             "Lớp 3: Cấm Kê Đơn Thuốc",
              [
-                 "Tuyệt đối cấm kê liều thuốc đặc trị (kháng sinh, corticoid).",
-                 "Yêu cầu mang thú cưng đi khám.",
-                 "Tự động gắn thông điệp miễn trừ trách nhiệm pháp lý y tế."
+                 "Nghiêm cấm AI tự cho liều lượng thuốc đặc trị (kháng sinh, giảm đau nặng).",
+                 "Tránh nguy cơ thú cưng bị ngộ độc do dùng sai liều lượng.",
+                 "Khuyên chủ đưa đi khám bác sĩ để được kiểm tra trực tiếp."
              ], title_color=COLOR_SECONDARY)
 
-    # Slide 6: Kiến trúc Kỹ thuật Tổng thể (with image)
+    # =========================================================================
+    # SLIDE 6: KIẾN TRÚC HỆ THỐNG ĐƠN GIẢN & HIỆU QUẢ
+    # =========================================================================
     s6 = add_standard_slide(
-        "5. Kiến trúc Hệ thống & Luồng Xử lý AI",
-        "Quy trình Đơn giản - Hoạt động Liền mạch - Chuẩn Y tế",
-        "Kính thưa Hội đồng, hệ thống PetCare AI hoạt động qua 4 bước rất rõ ràng: Bước 1 tiếp nhận câu hỏi của gia chủ; Bước 2 tự động tra cứu hồ sơ giống loài, cân nặng và lịch tiêm; Bước 3 bộ não AI phân tích và kiểm duyệt an toàn y tế; Bước 4 xuất lời khuyên dễ hiểu kèm nút đặt lịch khám bác sĩ."
+        "5. Kiến Trúc Hệ Thống Đơn Giản & Hiệu Quả",
+        "4 Tầng Hoạt Động Liền Mạch - Tốc Độ Nhanh - Dễ Nâng Cấp",
+        "Kính thưa Hội đồng, hệ thống gồm 4 tầng rất trực quan: Tầng người dùng gồm 5 đối tượng; Tầng giao diện trên web và điện thoại; Tầng máy chủ xử lý kết hợp bộ não AI; và Tầng cơ sở dữ liệu lưu trữ trọn đời hồ sơ thú cưng."
     )
     add_card(s6, Inches(0.6), Inches(1.1), Inches(3.9), Inches(3.4),
-             "Thành phần Cốt lõi của Hệ thống",
+             "Các Bộ Phận Chính Của Hệ Thống",
              [
-                 "Giao diện người dùng (Next.js): Dễ dùng trên cả máy tính và điện thoại.",
-                 "Máy chủ xử lý (FastAPI Python): Tiếp nhận yêu cầu, điều phối bảo mật.",
-                 "Cơ sở dữ liệu (PostgreSQL): Lưu trữ an toàn hồ sơ bệnh án, lịch tiêm, đơn thuốc.",
-                 "Bộ đệm tăng tốc (Redis): Đảm bảo tốc độ phản hồi siêu tốc dưới 10 giây.",
-                 "Khám từ xa (Telehealth WebRTC): Gọi video trực tiếp giữa Bác sĩ và chủ nuôi."
+                 "Giao diện người dùng (Next.js): Rõ ràng, dễ bấm trên cả máy tính và điện thoại.",
+                 "Máy chủ xử lý (FastAPI Python): Tiếp nhận dữ liệu nhanh, bảo mật thông tin an toàn.",
+                 "Cơ sở dữ liệu (PostgreSQL): Lưu trữ sổ tiêm, đơn thuốc, lịch hẹn và hóa đơn.",
+                 "Bộ tăng tốc (Redis): Giúp tải trang và nhận tin nhắn phản hồi dưới 1 giây.",
+                 "Khám bệnh từ xa (Video Call): Bác sĩ và chủ nuôi có thể gọi video trực tiếp khi cần."
              ])
-    add_image_card(s6, "/app/slides_assets/system_architecture.png", Inches(4.7), Inches(1.1), Inches(4.7), Inches(3.4), "Sơ đồ Kiến trúc Đa tầng Micro-services của PetCare AI")
+    add_image_card(s6, "/app/slides_assets/system_architecture.png", Inches(4.7), Inches(1.1), Inches(4.7), Inches(3.4), "Sơ đồ Kiến trúc 4 tầng của PetCare AI")
 
-    # Slide 7: Cơ sở Dữ liệu 34 Thực thể
+    # =========================================================================
+    # SLIDE 7: CƠ SỞ DỮ LIỆU KHOA HỌC (34 BẢNG)
+    # =========================================================================
     s7 = add_standard_slide(
-        "6. Thiết kế Cơ sở Dữ liệu Quan hệ (34 Thực thể)",
-        "Chuẩn hóa 3NF - Đảm bảo Tính Toàn vẹn Dữ liệu Nghiệp vụ",
-        "Hệ thống được thiết kế với 34 bảng quan hệ chuẩn 3NF, phân tách rõ ràng thành 5 phân vùng nghiệp vụ từ tiếp đón, khám lâm sàng cho đến điều trị nội trú và quản lý giao dịch."
+        "6. Cơ Sở Dữ Liệu Được Tổ Chức Khoa Học (34 Bảng Dữ Liệu)",
+        "Quản Lý Đầy Đủ Mọi Hoạt Động Của Bệnh Viện Thú Y",
+        "Cơ sở dữ liệu được chia làm 5 nhóm gọn gàng, từ quản lý tài khoản, hồ sơ sổ tiêm, khám chữa bệnh cho đến điều trị nội trú và thanh toán hóa đơn."
     )
     add_card(s7, Inches(0.6), Inches(1.1), Inches(4.3), Inches(1.6),
-             "Cụm 1: Quản trị & Người dùng (RBAC)",
-             ["users, roles, permissions, audit_logs", "Xác thực JWT, bảo mật dữ liệu y tế"],
+             "Nhóm 1: Người Dùng & Phân Quyền",
+             ["Tài khoản 5 nhóm người (Khách, Bác sĩ, Lễ tân, Điều dưỡng, Admin)", "Đăng nhập bảo mật, phân quyền ai làm việc nấy"],
              title_color=COLOR_PRIMARY)
     add_card(s7, Inches(5.1), Inches(1.1), Inches(4.3), Inches(1.6),
-             "Cụm 2: Thú cưng & Hồ sơ Sổ tiêm",
-             ["pets, species, breeds, vaccinations", "Microchip ID & Lịch sử tiêm phòng số"],
+             "Nhóm 2: Hồ Sơ Thú Cưng & Sổ Tiêm",
+             ["Lưu giống loài, ngày sinh, cân nặng, mã định danh", "Theo dõi lịch sử tiêm phòng và lịch tiêm nhắc lại"],
              title_color=COLOR_SECONDARY)
     add_card(s7, Inches(0.6), Inches(2.9), Inches(4.3), Inches(1.6),
-             "Cụm 3: Khám lâm sàng & Bệnh án (EMR)",
-             ["appointments, clinical_records, prescriptions", "medications, lab_tests & hình ảnh cận lâm sàng"],
+             "Nhóm 3: Khám Chữa Bệnh & Đơn Thuốc",
+             ["Lịch sử khám, kết quả chẩn đoán và phác đồ điều trị", "Danh mục thuốc, hướng dẫn sử dụng và kết quả xét nghiệm"],
              title_color=COLOR_AMBER)
     add_card(s7, Inches(5.1), Inches(2.9), Inches(4.3), Inches(1.6),
-             "Cụm 4 & 5: Nội trú & AI Billing",
-             ["hospitalizations, daily_care_logs, cages", "ai_sessions, guardrail_logs, vietqr_transactions"],
+             "Nhóm 4 & 5: Chăm Sóc Nằm Viện & Thanh Toán",
+             ["Nhật ký theo dõi thú cưng nằm viện theo từng ca trực", "Lịch sử câu hỏi của AI và hóa đơn quét mã VietQR tự động"],
              title_color=COLOR_PRIMARY)
 
-    # Slide 8: Phân hệ Khách hàng & Chatbot AI (with image)
+    # =========================================================================
+    # SLIDE 8: PHÂN HỆ KHÁCH HÀNG: CHATBOT AI & SỔ TIÊM
+    # =========================================================================
     s8 = add_standard_slide(
-        "7. Phân hệ Khách hàng: Chatbot AI & Sổ Tiêm Số",
-        "Giao diện Thân thiện - Trải nghiệm Liền mạch 24/7",
-        "Giao diện phân hệ Khách hàng cho phép chủ nuôi trò chuyện trực tiếp với Trợ lý AI, tra cứu sổ tiêm phòng điện tử và quản lý thẻ QR khẩn cấp gắn trên vòng cổ thú cưng."
+        "7. Phân Hệ Khách Hàng: Tiện Lợi & Dễ Sử Dụng",
+        "Đồng Hành Cùng Chủ Nuôi Mọi Lúc - Mọi Nơi 24/7",
+        "Giao diện phân hệ Khách hàng cho phép chủ nuôi trò chuyện trực tiếp với Trợ lý AI, tra cứu sổ tiêm phòng điện tử và quản lý thẻ mã QR khẩn cấp đeo trên cổ thú cưng."
     )
     add_card(s8, Inches(0.6), Inches(1.1), Inches(4.1), Inches(3.4),
-             "Tính năng Nổi bật Khách hàng",
+             "Những Tiện Ích Dành Cho Chủ Nuôi",
              [
-                 "Trợ lý AI PetCare: Hỗ trợ 24/7 giải đáp triệu chứng và mẹo chăm sóc.",
-                 "Pet Passport điện tử: Tra cứu lịch tiêm chủng, sổ giun định kỳ.",
-                 "Thẻ QR Khẩn cấp: Quét xem số điện thoại chủ nuôi khi thất lạc thú cưng.",
-                 "Đặt lịch khám online & Nhận thông báo tự động trước giờ hẹn."
+                 "Trợ lý AI 24/7: Giải đáp nhanh mọi thắc mắc về ăn uống, dinh dưỡng và triệu chứng.",
+                 "Sổ tiêm chủng điện tử: Xem lịch tiêm phòng mọi lúc ngay trên điện thoại, không lo mất sổ.",
+                 "Thẻ mã QR khẩn cấp: Đeo vòng cổ, người nhặt được quét mã là gọi được cho chủ ngay.",
+                 "Đặt lịch khám trước: Chọn bác sĩ và giờ khám tiện lợi, tự động có chuông nhắc hẹn."
              ])
-    add_image_card(s8, "/app/slides_assets/chatbot_ui.png", Inches(4.9), Inches(1.1), Inches(4.5), Inches(3.4), "Hình: Giao diện Trợ lý AI tư vấn và cảnh báo lâm sàng")
+    add_image_card(s8, "/app/slides_assets/chatbot_ui.png", Inches(4.9), Inches(1.1), Inches(4.5), Inches(3.4), "Giao diện Trợ lý AI tư vấn và cảnh báo lâm sàng")
 
-    # Slide 9: Phân hệ Bác sĩ: EMR & Telehealth
+    # =========================================================================
+    # SLIDE 9: PHÂN HỆ BÁC SĨ: BỆNH ÁN ĐIỆN TỬ & KHÁM TỪ XA
+    # =========================================================================
     s9 = add_standard_slide(
-        "8. Phân hệ Bác sĩ: Bệnh án Điện tử (EMR) & Telehealth",
-        "Số hóa Toàn diện Quy trình Khám chữa Bệnh Lâm sàng",
-        "Bác sĩ có thể nhập liệu bệnh án điện tử có cấu trúc, kê đơn tương tác thuốc và thực hiện các cuộc gọi khám bệnh từ xa Telehealth chất lượng cao qua WebRTC."
+        "8. Phân Hệ Bác Sĩ: Khám Bệnh Nhanh & Chính Xác",
+        "Bỏ Hẳn Sổ Ghi Tay - Khám Bệnh Từ Xa Tiện Lợi Qua Video",
+        "Bác sĩ có thể nhập bệnh án nhanh chóng trên máy tính, kê đơn thuốc tự động có kiểm tra tồn kho và gọi video khám từ xa trực tiếp với gia chủ khi không thể đến viện."
     )
     add_card(s9, Inches(0.6), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Bệnh án Điện tử (EMR Chuẩn hóa)",
+             "Bệnh Án Điện Tử Tiện Lợi",
              [
-                 "Nhập liệu lâm sàng có cấu trúc: Triệu chứng, Chẩn đoán, Phác đồ.",
-                 "Kê đơn thuốc tự động: Tích hợp kho dược và cảnh báo tương tác thuốc.",
-                 "Xem lại toàn bộ lịch sử khám chữa bệnh qua dòng thời gian (Timeline).",
-                 "Xuất phiếu khám bệnh và đơn thuốc điện tử (PDF/In tức thì)."
+                 "Nhập liệu nhanh gọn: Triệu chứng, chẩn đoán và phác đồ điều trị.",
+                 "Kê đơn thuốc tự động: Tự kiểm tra thuốc trong kho và nhắc liều lượng.",
+                 "Xem lại lịch sử: Xem trọn vẹn các lần khám trước trên một trục thời gian rõ ràng.",
+                 "In phiếu khám & Đơn thuốc: In nhanh hoặc gửi file cho chủ nuôi chỉ với 1 cú bấm."
              ], title_color=COLOR_PRIMARY)
     add_card(s9, Inches(5.1), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Telehealth Khám bệnh Từ xa (WebRTC)",
+             "Khám Bệnh Trực Tuyến Từ Xa (Video Call)",
              [
-                 "Tích hợp WebRTC P2P Video Call độ nét cao, không giật lag.",
-                 "Bác sĩ vừa quan sát thú cưng vừa tra cứu song song bệnh án.",
-                 "Tiện lợi cho chủ nuôi ở xa hoặc thú cưng gặp khó khăn khi di chuyển.",
-                 "Ghi nhận kết quả khám và xuất đơn thuốc ngay trong cuộc gọi."
+                 "Gọi video độ nét cao trực tiếp giữa bác sĩ và chủ thú cưng.",
+                 "Bác sĩ vừa quan sát thú cưng vừa ghi chép bệnh án trên cùng một màn hình.",
+                 "Rất tiện lợi cho thú cưng khó đi lại, già yếu hoặc chủ ở xa.",
+                 "Hỗ trợ xuất đơn thuốc và hướng dẫn chăm sóc ngay trong cuộc gọi."
              ], title_color=COLOR_SECONDARY)
 
-    # Slide 10: Phân hệ Lễ tân: Điều phối & VietQR (with image)
+    # =========================================================================
+    # SLIDE 10: PHÂN HỆ LỄ TÂN: TIẾP ĐÓN & VIETQR
+    # =========================================================================
     s10 = add_standard_slide(
-        "9. Phân hệ Lễ tân: Tiếp đón, Điều phối & VietQR",
-        "Rút ngắn Thời gian Tiếp đón & Tự động hóa Thanh toán",
-        "Bàn tiếp đón lễ tân hỗ trợ check-in nhanh dưới 30 giây và tích hợp chuẩn VietQR Napas247, giúp khách hàng quét mã thanh toán không tiền mặt và hệ thống tự động gạch nợ."
+        "9. Phân Hệ Lễ Tân: Tiếp Đón Nhanh & Thanh Toán Tự Động",
+        "Rút Ngắn Thời Gian Chờ Đợi - Không Cần Dùng Tiền Mặt",
+        "Lễ tân có thể tiếp đón khách chỉ trong 30 giây bằng số điện thoại hoặc mã hẹn trước. Sau khi khám xong, hệ thống tự động tạo mã VietQR có sẵn số tiền để khách hàng quét trả tiền nhanh gọn."
     )
     add_card(s10, Inches(0.6), Inches(1.1), Inches(4.1), Inches(3.4),
-             "Quy trình Tiếp đón & Thanh toán",
+             "Tiếp Đón Nhanh & Thanh Toán Tự Động",
              [
-                 "Bàn điều phối lễ tân: Check-in nhanh bằng QR code / số điện thoại.",
-                 "Phân luồng thông minh: Tự động điều phối thú cưng vào phòng khám phù hợp.",
-                 "Chuẩn VietQR Napas247: Tự động tạo mã QR chứa đầy đủ số tiền và nội dung.",
-                 "Đồng bộ Webhook: Nhận thông báo giao dịch thành công và gạch nợ tức thì."
+                 "Tiếp đón trong 30 giây: Tra cứu hồ sơ nhanh qua số điện thoại hoặc mã hẹn.",
+                 "Phân phòng khám tự động: Tự xếp thú cưng vào phòng bác sĩ đang sẵn sàng.",
+                 "Quét mã VietQR tiện lợi: Tự điền chính xác số tiền và nội dung thanh toán.",
+                 "Tự động gạch nợ: Tiền vào tài khoản là hệ thống tự nhận và in phiếu thu ngay."
              ])
-    add_image_card(s10, "/app/slides_assets/receptionist_ui.png", Inches(4.9), Inches(1.1), Inches(4.5), Inches(3.4), "Hình: Màn hình tiếp đón lễ tân và điều phối khám")
+    add_image_card(s10, "/app/slides_assets/receptionist_ui.png", Inches(4.9), Inches(1.1), Inches(4.5), Inches(3.4), "Màn hình tiếp đón lễ tân và điều phối khám")
 
-    # Slide 11: Phân hệ Điều dưỡng & AI Care Brief (with image)
+    # =========================================================================
+    # SLIDE 11: PHÂN HỆ ĐIỀU DƯỠNG & TÓM TẮT DIỄN BIẾN AI
+    # =========================================================================
     s11 = add_standard_slide(
-        "10. Phân hệ Điều dưỡng & AI Care Brief",
-        "Theo dõi Nội trú & Tự động Tóm tắt Nhật ký Chăm sóc",
-        "Tính năng AI Care Brief giúp điều dưỡng và bác sĩ tiết kiệm thời gian giao ban: thay vì đọc nhật ký rải rác, AI tự động tổng hợp diễn biến 24h điều trị thành bản tóm tắt 30 giây."
+        "10. Phân Hệ Điều Dưỡng: Chăm Sóc Nội Trú Chu Đáo",
+        "Theo Dõi Thú Cưng Nằm Viện & AI Tự Động Tóm Tắt 30 Giây",
+        "Điều dưỡng cập nhật nhiệt độ, bữa ăn, dịch truyền theo ca trực. Điểm đặc biệt là tính năng AI Care Brief tự động gom toàn bộ ghi chép cả ngày thành bản tóm tắt 30 giây giúp bác sĩ giao ban cực nhanh."
     )
     add_card(s11, Inches(0.6), Inches(1.1), Inches(4.1), Inches(3.4),
-             "Theo dõi Nội trú & AI Care Brief",
+             "Chăm Sóc Nằm Viện & Tóm Tắt AI",
              [
-                 "Live Care Monitoring: Cập nhật thân nhiệt, dinh dưỡng, dịch truyền theo ca.",
-                 "Tính năng AI Care Brief: LLM tự động tổng hợp toàn bộ nhật ký điều trị.",
-                 "Tiết kiệm thời gian: Bác sĩ nắm bắt nhanh diễn biến bệnh chỉ trong 30 giây.",
-                 "Gửi thông báo tiến triển sức khỏe định kỳ cho chủ nuôi yên tâm."
+                 "Nhật ký chăm sóc theo ca: Cập nhật thân nhiệt, thức ăn, uống thuốc và dịch truyền.",
+                 "AI tóm tắt diễn biến (AI Care Brief): Tự động tổng hợp nhật ký 24 giờ của thú cưng.",
+                 "Bàn giao ca trực siêu nhanh: Bác sĩ chỉ cần 30 giây là nắm rõ bệnh nhân đang khá lên hay yếu đi.",
+                 "Cập nhật cho gia chủ: Gửi thông báo và hình ảnh để chủ nuôi ở nhà hoàn toàn an tâm."
              ])
-    add_image_card(s11, "/app/slides_assets/ai_care_brief.png", Inches(4.9), Inches(1.1), Inches(4.5), Inches(3.4), "Hình: Cửa sổ AI Care Brief tự động trích xuất diễn biến phục hồi")
+    add_image_card(s11, "/app/slides_assets/ai_care_brief.png", Inches(4.9), Inches(1.1), Inches(4.5), Inches(3.4), "Cửa sổ AI Care Brief tự động trích xuất diễn biến phục hồi")
 
-    # Slide 12: Phân hệ Quản trị viên (Admin & BI)
+    # =========================================================================
+    # SLIDE 12: PHÂN HỆ QUẢN TRỊ VIÊN (ADMIN)
+    # =========================================================================
     s12 = add_standard_slide(
-        "11. Phân hệ Quản trị viên: Quản trị & BI Analytics",
-        "Điều hành Toàn diện Cơ sở Phòng khám Dựa trên Dữ liệu",
-        "Phân hệ Admin cung cấp công cụ quản trị phân quyền RBAC, theo dõi kho dược phẩm và bảng phân tích kinh doanh BI theo thời gian thực."
+        "11. Phân Hệ Quản Trị: Nắm Bắt Toàn Diện Phòng Khám",
+        "Quản Lý Kho Dược & Biểu Đồ Doanh Thu Trực Quan",
+        "Phân hệ dành cho Quản lý giúp phân quyền nhân viên, quản lý xuất nhập kho thuốc và theo dõi biểu đồ doanh thu theo thời gian thực."
     )
     add_card(s12, Inches(0.6), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Quản trị Hệ thống & Dược kho",
+             "Quản Lý Hoạt Động & Kho Dược",
              [
-                 "Phân quyền theo vai trò (RBAC): Admin, Bác sĩ, Lễ tân, Điều dưỡng, Khách hàng.",
-                 "Audit Log toàn diện: Ghi nhận mọi thao tác sửa/xóa dữ liệu lâm sàng.",
-                 "Quản lý kho Dược & Vật tư: Cảnh báo tự động khi thuốc sắp hết hoặc cận date.",
-                 "Cấu hình hệ thống: Thiết lập tham số phòng khám và thông tin cơ sở."
+                 "Phân quyền nhân viên: Bác sĩ, lễ tân, điều dưỡng làm đúng vai trò của mình.",
+                 "Theo dõi kho thuốc & Vắc-xin: Tự động cảnh báo khi thuốc sắp hết hoặc cận ngày hết hạn.",
+                 "Ghi nhận lịch sử thao tác: Tránh nhầm lẫn, bảo đảm minh bạch số liệu.",
+                 "Cài đặt linh hoạt: Dễ dàng thêm dịch vụ, bảng giá hoặc giờ làm việc mới."
              ], title_color=COLOR_PRIMARY)
     add_card(s12, Inches(5.1), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Phân tích Kinh doanh (BI Dashboard)",
+             "Báo Cáo & Thống Kê Trực Quan",
              [
-                 "Biểu đồ doanh thu trực quan theo ngày, tuần, tháng theo thời gian thực.",
-                 "Thống kê tần suất bệnh lý phổ biến và tỷ lệ khỏi bệnh thành công.",
-                 "Đánh giá hiệu suất phục vụ của đội ngũ Bác sĩ và Điều dưỡng.",
-                 "Theo dõi chỉ số tương tác AI để không ngừng tối ưu trải nghiệm khách hàng."
+                 "Biểu đồ doanh thu: Theo dõi thu chi rõ ràng theo ngày, tuần, tháng.",
+                 "Thống kê bệnh thường gặp: Giúp phòng khám chủ động nhập sẵn thuốc điều trị.",
+                 "Đo lường năng suất làm việc: Đếm số ca khám của từng bác sĩ trong tháng.",
+                 "Mức độ hài lòng của khách: Thống kê số lượng khách hàng quay lại phòng khám."
              ], title_color=COLOR_SECONDARY)
 
-    # Slide 13: Đánh giá Thực nghiệm & Kiểm thử Lâm sàng
+    # =========================================================================
+    # SLIDE 13: KẾT QUẢ THỬ NGHIỆM THỰC TẾ
+    # =========================================================================
     s13 = add_standard_slide(
-        "12. Kết quả Thực nghiệm & Kiểm thử Lâm sàng",
-        "Đánh giá Nghiêm ngặt theo Chuẩn Kỹ thuật & Y tế Thú y",
-        "Kết quả kiểm thử lâm sàng trên 6 tình huống mẫu cho thấy hệ thống đạt 100% tỷ lệ an toàn y tế, độ trễ phản hồi dưới 650ms và vượt qua 100% các bài kiểm thử backend/frontend."
+        "12. Kết Quả Thử Nghiệm Thực Tế Của Hệ Thống",
+        "Thử Nghiệm Nghiêm Túc - Hoạt Động Ổn Định - An Toàn 100%",
+        "Chúng em đã thử nghiệm hệ thống qua 6 tình huống thực tế thường gặp nhất. Kết quả cho thấy AI trả lời rất an toàn, không có lỗi kê đơn thuốc bậy và tốc độ phản hồi cực nhanh dưới 1 giây."
     )
     
     rows, cols = 7, 4
@@ -362,7 +394,7 @@ def create_deck():
     table.columns[2].width = Inches(2.5)
     table.columns[3].width = Inches(1.4)
     
-    headers = ["Mã Test", "Tình huống Lâm sàng", "Tiêu chí Đánh giá", "Kết quả"]
+    headers = ["Mã Thử", "Tình Huống Thực Tế", "Yêu Cầu Kết Quả", "Đánh Giá"]
     for j, h in enumerate(headers):
         cell = table.cell(0, j)
         cell.text = h
@@ -372,12 +404,12 @@ def create_deck():
         set_font(p, 10.5, bold=True, color_rgb=COLOR_WHITE)
         
     test_data = [
-        ("TEST-01", "Mèo nôn ra búi lông", "Tư vấn chế độ dinh dưỡng & chải lông", "100% PASS"),
-        ("TEST-02", "Chó co giật sau ăn bả", "Bật cảnh báo đỏ khẩn cấp, hướng dẫn sơ cứu", "100% PASS"),
-        ("TEST-03", "Hỏi xin liều thuốc kháng sinh", "Từ chối kê đơn, yêu cầu khám trực tiếp", "100% PASS"),
-        ("TEST-04", "Hỏi câu chuyện phi y tế", "In-Scope từ chối lịch sự, giữ phạm vi", "100% PASS"),
-        ("TEST-05", "Đọc ảnh Sổ tiêm chủng (OCR)", "Trích xuất đúng loại vaccine & ngày tiêm", "100% PASS"),
-        ("TEST-06", "Tóm tắt bệnh án nội trú", "AI Care Brief trích xuất đúng chỉ số sinh tồn", "100% PASS")
+        ("TEST-01", "Mèo bị nôn búi lông", "Chỉ dẫn chế độ ăn, chải lông, không cho thuốc bừa", "100% ĐẠT"),
+        ("TEST-02", "Chó nghi ăn phải bả ngộ độc", "Bật cảnh báo đỏ cấp cứu, chỉ cách sơ cứu khẩn cấp", "100% ĐẠT"),
+        ("TEST-03", "Khách hỏi xin liều thuốc kháng sinh", "Tuyệt đối từ chối kê đơn, bảo mang đến khám", "100% ĐẠT"),
+        ("TEST-04", "Hỏi chuyện đời sống ngoài lề", "Từ chối lịch sự, giữ phạm vi chăm sóc thú cưng", "100% ĐẠT"),
+        ("TEST-05", "Chụp ảnh sổ tiêm chủng (OCR)", "Tự động đọc đúng tên mũi tiêm và ngày hẹn", "100% ĐẠT"),
+        ("TEST-06", "Tóm tắt sổ nằm viện nội trú", "AI Care Brief gom đủ thông tin sức khỏe trong 30 giây", "100% ĐẠT")
     ]
     
     for i, row in enumerate(test_data):
@@ -393,33 +425,36 @@ def create_deck():
                 set_font(p, 9.5, color_rgb=COLOR_DARK)
 
     add_card(s13, Inches(0.6), Inches(3.45), Inches(8.8), Inches(1.05),
-             "Tổng hợp Chỉ số Kỹ thuật & Độ an toàn Y tế:",
+             "Tóm Tắt Chỉ Số Đo Lường Thực Tế:",
              [
-                 "Độ trễ trung bình AI: <650ms (Cloud Gemini / Ollama Local) | Tuân thủ 6/6 tiêu chuẩn An toàn Y tế: 100% PASS.",
-                 "Kiểm thử hệ thống Backend: 19/19 API Tests PASS | Frontend: 57/57 Next.js Routes biên dịch thành công (0 Lỗi)."
+                 "Tốc độ phản hồi của AI: Cực nhanh từ 0.05 giây đến dưới 1 giây đối với các câu hỏi tư vấn chăm sóc.",
+                 "Độ an toàn y tế: Đạt 100% tiêu chuẩn an toàn, không có tình trạng tự kê đơn thuốc nguy hiểm.",
+                 "Độ ổn định của hệ thống: Toàn bộ các trang web và tính năng hoạt động mượt mà, sẵn sàng sử dụng."
              ], title_color=COLOR_SECONDARY)
 
-    # Slide 14: Kết luận & Hướng phát triển
+    # =========================================================================
+    # SLIDE 14: KẾT LUẬN & HƯỚNG PHÁT TRIỂN
+    # =========================================================================
     s14 = add_standard_slide(
-        "13. Kết luận & Hướng Phát triển Tương lai",
-        "Tổng kết Toàn diện Đề tài & Định hướng Mở rộng Ứng dụng",
-        "Nhóm chúng em đã hoàn thành toàn diện các mục tiêu đề ra và sẵn sàng đưa sản phẩm vào triển khai thực tế. Chúng em xin chân thành cảm ơn Thầy TS. Trần Quang Quý và Hội đồng đã chú ý lắng nghe!"
+        "13. Kết Luận & Hướng Phát Triển Tiếp Theo",
+        "Tổng Kết Đề Tài & Định Hướng Nâng Cấp Sản Phẩm",
+        "Đề tài đã hoàn thành xuất sắc các mục tiêu đề ra. Sản phẩm thực tế chạy mượt mà, giải quyết được bài toán quá tải của phòng khám và hỗ trợ chăm sóc thú cưng chu đáo. Chúng em xin chân thành cảm ơn Thầy và Hội đồng!"
     )
     add_card(s14, Inches(0.6), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Kết luận Đề tài",
+             "Kết Quả Đạt Được Của Dự Án",
              [
-                 "Hoàn thành toàn diện 100% mục tiêu nghiên cứu đã đăng ký.",
-                 "Xây dựng thành công hệ sinh thái Quản lý Phòng khám kết hợp Trợ lý AI.",
-                 "Khung an toàn y khoa 3 chốt chặn loại bỏ hoàn toàn nguy cơ dùng thuốc sai cách.",
-                 "Sản phẩm đạt độ hoàn thiện cao, sẵn sàng triển khai tại phòng khám thực tế."
+                 "Hoàn thành trọn vẹn 100% các chức năng quản lý phòng khám thú y.",
+                 "Trợ lý AI trả lời nhanh, chuẩn xác và có 3 lớp bảo vệ an toàn y tế.",
+                 "Hỗ trợ đầy đủ 5 phân hệ: Khách hàng, Bác sĩ, Lễ tân, Điều dưỡng, Admin.",
+                 "Hệ thống chạy mượt mà trên môi trường thực tế, sẵn sàng áp dụng ngay."
              ], title_color=COLOR_PRIMARY)
     add_card(s14, Inches(5.1), Inches(1.1), Inches(4.3), Inches(3.4),
-             "Định hướng Phát triển Tiếp theo",
+             "Hướng Phát Triển Trong Tương Lai",
              [
-                 "Nâng cấp RAG (Retrieval-Augmented Generation) kết hợp Vector DB (Milvus/Qdrant).",
-                 "Phát triển ứng dụng Mobile App (React Native / Flutter) cho chủ thú cưng.",
-                 "Ứng dụng Computer Vision chuyên sâu chẩn đoán tổn thương da và phim X-quang.",
-                 "Kết nối IoT vòng cổ thông minh theo dõi nhịp tim và bước chạy của thú cưng."
+                 "Đưa ứng dụng lên điện thoại (App Store & Google Play) để khách hàng dễ tải.",
+                 "Phát triển tính năng nhận diện bệnh ngoài da qua ảnh chụp camera.",
+                 "Mở rộng kết nối vòng cổ thông minh theo dõi vị trí và nhịp tim thú cưng.",
+                 "Kết nối thêm các cổng thanh toán ví điện tử phổ biến (Momo, ZaloPay)."
              ], title_color=COLOR_SECONDARY)
 
     output_pptx = "/app/BAO_CAO_THUYET_TRINH_PETCARE_AI.pptx"

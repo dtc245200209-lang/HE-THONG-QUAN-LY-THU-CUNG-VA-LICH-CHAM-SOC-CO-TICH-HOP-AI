@@ -359,7 +359,7 @@ def seed_all():
                 pet_id=milo.id,
                 title="Phiếu kết quả xét nghiệm máu tổng quát",
                 document_type="LAB_RESULT",
-                file_url="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600",
+                file_url="uploads/phieu_xet_nghiem_mau_milo.png",
                 upload_date=now - timedelta(days=7),
                 ai_summary="Các chỉ số sinh hóa máu hồng cầu, bạch cầu, men gan thận hoàn toàn bình thường.",
                 status="CONFIRMED",

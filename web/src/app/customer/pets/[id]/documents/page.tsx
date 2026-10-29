@@ -175,6 +175,14 @@ export default function PetDocumentsPage() {
     }
   };
 
+  const getFileUrl = (url: string) => {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return url.startsWith('/') ? url : `/${url}`;
+  };
+
   if (loading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -465,7 +473,7 @@ export default function PetDocumentsPage() {
 
                     <div className="flex items-center gap-2 pt-1 border-t border-gray-200 text-[11px]">
                       <a 
-                        href={`/${doc.file_url}`} 
+                        href={getFileUrl(doc.file_url)} 
                         target="_blank" 
                         rel="noreferrer"
                         className="text-indigo-600 hover:underline flex items-center gap-1 font-semibold"

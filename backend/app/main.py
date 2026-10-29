@@ -19,6 +19,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import os
+from fastapi.staticfiles import StaticFiles
+
+os.makedirs("uploads", exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 @app.get("/health")
 def health_check():
     return {"status": "ok", "environment": settings.ENVIRONMENT}

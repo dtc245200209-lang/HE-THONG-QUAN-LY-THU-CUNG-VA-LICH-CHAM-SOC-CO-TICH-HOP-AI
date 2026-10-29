@@ -47,6 +47,14 @@ export default function VetDocumentsPage() {
     fetchDocs(petId);
   };
 
+  const getFileUrl = (url: string) => {
+    if (!url) return '#';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return url.startsWith('/') ? url : `/${url}`;
+  };
+
   if (loading || authLoading) {
     return (
       <div className="h-64 flex items-center justify-center">
@@ -111,7 +119,7 @@ export default function VetDocumentsPage() {
                   Loại: {doc.document_type || 'Chẩn đoán'} • Ngày: {new Date(doc.upload_date).toLocaleDateString('vi-VN')}
                 </p>
                 <a
-                  href={`/${doc.file_url}`}
+                  href={getFileUrl(doc.file_url)}
                   target="_blank"
                   rel="noreferrer"
                   className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"

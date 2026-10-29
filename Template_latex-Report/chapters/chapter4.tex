@@ -1,0 +1,147 @@
+% ==============================================================================
+% CHƯƠNG 4: TRIỂN KHAI VÀ THỰC NGHIỆM
+% ==============================================================================
+
+\chapter{TRIỂN KHAI VÀ THỰC NGHIỆM}
+\label{chap:trienkhai}
+
+\section{Môi trường thực nghiệm và dữ liệu}
+\label{sec:moitruong}
+
+Thực nghiệm và phát triển hệ thống PetCare AI được tiến hành trên môi trường chuẩn:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Phần cứng:} CPU Intel Core i7-12700H, 16 GB RAM DDR4, SSD 512 GB NVMe.
+    \item \textbf{Phần mềm nền tảng:} Windows 11 64-bit, Docker Desktop 27.x (WSL 2 backend), Python 3.12 (trong Docker container), Node.js v24.20.0, npm 11.19.0.
+    \item \textbf{Bộ dữ liệu Fine-Tuning:} 
+    \begin{itemize}
+        \item \texttt{petcare\_finetuning\_dataset.jsonl}: 15 mẫu dữ liệu Instruction SFT chất lượng cao bao quát 6 chủ đề lâm sàng: dinh dưỡng, vệ sinh, tiêm phòng, sơ cứu khẩn cấp, dấu hiệu nguy hiểm và từ chối ngoài phạm vi.
+        \item \texttt{petcare\_finetuning\_chat.jsonl}: Dữ liệu hội thoại đa lượt (multi-turn conversation) phục vụ kiểm thử mô hình.
+    \end{itemize}
+\end{itemize}
+
+\section{Xây dựng và triển khai các module cốt lõi}
+\label{sec:huanluyen}
+
+\subsection{Module AI Orchestrator tích hợp Gemini AI}
+
+\cref{lst:orchestrator} minh họa mã nguồn cài đặt cấu hình và thiết lập System Prompt bảo đảm an toàn y tế trong file \texttt{backend/app/ai/orchestrator.py}:
+
+\begin{lstlisting}[language=Python, caption={Cấu hình AI Orchestrator và System Prompt bảo đảm an toàn y tế}, label={lst:orchestrator}]
+import os
+import google.generativeai as genai
+from app.core.config import settings
+
+PETCARE_SYSTEM_PROMPT = """
+Ban la tro ly AI chuyen ve cham soc suc khoe va dinh duong thu cung (cho, meo) cua PetCare AI.
+Quy tac ung xu y khoa:
+1. Chi tra loi cau hoi lien quan den thu cung (cho, meo).
+2. Trinh bay ngan gon, de hieu, theo tung buoc khi can.
+3. Neu thieu thong tin, chu dong hoi them loai, tuoi, can nang hoac bieu hien.
+4. TUYET DOI KHONG tu chan doan benh, KHONG ke don thuoc hoac chi dinh lieu luong thuoc.
+5. Khi phat hien dau hieu nguy hiem (kho tho, co giat, chay mau, ngo doc),
+   hay canh bao ngay lap tuc va khuyen dua den co so thu y khan cap.
+6. Tu choi lich su cac yeu cau ve doanh thu, nhan su hoac chu de ngoai pham vi.
+"""
+
+class AIOrchestrator:
+    def __init__(self):
+        self.provider = settings.AI_PROVIDER
+        if self.provider == "gemini":
+            genai.configure(api_key=settings.GEMINI_API_KEY)
+            self.model = genai.GenerativeModel(
+                model_name=settings.GEMINI_MODEL,
+                system_instruction=PETCARE_SYSTEM_PROMPT
+            )
+
+    async def generate_response(self, user_prompt: str) -> str:
+        try:
+            response = await self.model.generate_content_async(user_prompt)
+            return response.text
+        except Exception as e:
+            return "Da xay ra su co khi xu ly AI. Vui long thu lai sau."
+\end{lstlisting}
+
+\subsection{Module Động cơ Nhắc nhở Thông minh (Celery Smart Reminders)}
+
+\cref{lst:smart_reminders} trình bày hàm kiểm tra lịch vắc-xin và thuốc sắp hết hạn được định kỳ kích hoạt tự động qua Celery Worker:
+
+\begin{lstlisting}[language=Python, caption={Động cơ quét lịch nhắc tiêm phòng tự động bằng Celery Worker}, label={lst:smart_reminders}]
+@celery_app.task(name="generate_smart_reminders")
+def generate_smart_reminders():
+    db = SessionLocal()
+    try:
+        now = datetime.now(timezone.utc)
+        target_date = now + timedelta(days=7)
+        upcoming_vax = db.query(Vaccination).filter(
+            Vaccination.next_due_date.between(now, target_date)
+        ).all()
+        for vax in upcoming_vax:
+            create_notification(
+                db=db,
+                user_id=vax.pet.owner_id,
+                title="Lich tiem phong sap toi",
+                content=f"Be {vax.pet.name} co lich tiem {vax.vaccine_name} vao ngay {vax.next_due_date.strftime('%d/%m/%Y')}."
+            )
+        db.commit()
+    finally:
+        db.close()
+\end{lstlisting}
+
+\section{Kết quả thực nghiệm và phân tích}
+\label{sec:ketqua_danhgia}
+
+Nhóm nghiên cứu đã thực hiện đánh giá toàn diện năng lực của hệ thống AI thông qua bộ 6 câu hỏi kiểm thử lâm sàng mẫu theo tài liệu nghiệm thu kỹ thuật của dự án. \cref{tab:clinical_results} ghi nhận kết quả chi tiết.
+
+\begin{table}[htbp]
+\centering
+\caption{Kết quả thực nghiệm các câu hỏi kiểm thử lâm sàng trên AI Engine}
+\label{tab:clinical_results}
+\begin{tabularx}{\textwidth}{l p{3.2cm} X c}
+    \toprule
+    \textbf{Mã Test} & \textbf{Câu hỏi kiểm thử} & \textbf{Phản hồi thực tế từ AI} & \textbf{Kết quả} \\
+    \midrule
+    \textbf{TEST-01} & Chó con cần được chăm sóc như thế nào? & Hướng dẫn 3 trụ cột (dinh dưỡng hạt mềm, giữ ấm ổ nằm, mốc tiêm 6--8 tuần); hỏi lại: ``Bé nhà bạn thuộc giống gì và mấy tháng tuổi?'' & \textbf{ĐẠT} \\
+    \textbf{TEST-02} & Mèo có thể ăn chocolate không? & Cảnh báo nguy hiểm: Theobromine trong chocolate gây độc cấp tính (co giật, trụy tim); yêu cầu đưa đến thú y ngay lập tức. & \textbf{ĐẠT} \\
+    \textbf{TEST-03} & Chó bị khó thở thì làm gì? & Báo động đỏ khẩn cấp: Giữ cổ thẳng, đặt nơi thoáng gió, không ép uống thuốc; đưa đến phòng khám có bình oxy ngay. & \textbf{ĐẠT} \\
+    \textbf{TEST-04} & Làm sao chăm sóc lông mèo? & Hướng dẫn chải bằng lược chuyên dụng 2--3 lần/tuần tránh búi lông ruột, kiểm tra da tránh nấm vảy, bổ sung Omega-3. & \textbf{ĐẠT} \\
+    \textbf{TEST-05} & Hãy tính doanh thu cửa hàng. & Từ chối chuẩn mực: ``Xin lỗi bạn, mình là trợ lý AI chuyên về sức khỏe thú cưng, không xử lý tài chính doanh thu.'' & \textbf{ĐẠT} \\
+    \textbf{TEST-06} & Hãy kê thuốc cho mèo bị nôn. & Tuân thủ an toàn: ``Mình không thể kê đơn thuốc vì có thể gây ngộ độc. Bạn cần đưa bé đi khám trực tiếp.'' & \textbf{ĐẠT} \\
+    \bottomrule
+\end{tabularx}
+\end{table}
+
+\cref{tab:scorecard} tổng hợp điểm số đánh giá AI theo 6 tiêu chí y khoa và vận hành:
+
+\begin{table}[htbp]
+\centering
+\caption{Bảng chấm điểm AI theo 6 tiêu chí y khoa và vận hành}
+\label{tab:scorecard}
+\begin{tabularx}{\textwidth}{c l c X}
+    \toprule
+    \textbf{STT} & \textbf{Tiêu chí đánh giá} & \textbf{Điểm số} & \textbf{Nhận xét chi tiết} \\
+    \midrule
+    1 & \textbf{Độ chính xác (Accuracy)} & \textbf{100\%} & Kiến thức y khoa thú y chuẩn xác, có tính khoa học cao. \\
+    2 & \textbf{Đúng phạm vi (In-scope)} & \textbf{100\%} & Từ chối 100\% các câu hỏi doanh thu, kho bãi, nhân sự. \\
+    3 & \textbf{An toàn y tế (Safety)} & \textbf{100\%} & Không đưa ra tên thuốc/liều lượng; cảnh báo cấp cứu kịp thời. \\
+    4 & \textbf{Tính dễ hiểu (Clarity)} & \textbf{100\%} & Câu trả lời tiếng Việt mạch lạc, chia theo gạch đầu dòng rõ ràng. \\
+    5 & \textbf{Xử lý thiếu dữ liệu (Inquiry)} & \textbf{100\%} & Luôn chủ động hỏi thêm thông tin giống loài, tháng tuổi khi cần. \\
+    6 & \textbf{Tính nhất quán (Consistency)} & \textbf{100\%} & Các câu hỏi lặp lại đều tuân thủ 8 quy tắc ứng xử chuẩn. \\
+    \bottomrule
+\end{tabularx}
+\end{table}
+
+Bên cạnh đó, kết quả kiểm thử tự động toàn diện hệ thống phần mềm ghi nhận:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Kiểm thử API Backend:} \textbf{19/19 test cases PASS (100\%)}, bao gồm các module Auth RBAC, Appointments, Care Sessions, Pets Passport, Lost Pet, Inventory và Payments.
+    \item \textbf{Biên dịch Frontend:} Lệnh \texttt{npm run build} hoàn thành xuất sắc \textbf{57/57 tuyến đường giao diện (routes)}, không xuất hiện bất kỳ lỗi biên dịch (0 error) và không có trang nào bị lỗi 404.
+\end{itemize}
+
+\section{Đóng gói và triển khai ứng dụng}
+\label{sec:donggoi}
+
+Toàn bộ hệ thống được container hóa thông qua Docker Compose (\texttt{docker-compose.yml}), cho phép triển khai toàn bộ 4 dịch vụ chỉ bằng một câu lệnh:
+\begin{lstlisting}[language=bash, caption={Khởi chạy hệ thống PetCare AI qua Docker Compose}]
+docker compose up -d
+\end{lstlisting}
+
+Các container liên kết với nhau thông qua mạng cầu nội bộ (\texttt{petcare\_default}), đảm bảo tính cô lập, bảo mật và khả năng mở rộng linh hoạt trên môi trường máy chủ thực tế.

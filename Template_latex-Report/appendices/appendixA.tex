@@ -1,0 +1,60 @@
+% ==============================================================================
+% PHỤ LỤC A: MÃ NGUỒN CHƯƠNG TRÌNH
+% ==============================================================================
+
+\chapter{MÃ NGUỒN CHƯƠNG TRÌNH}
+\label{app:sourcecode}
+
+\section{Liên kết kho mã nguồn (Repository)}
+
+Toàn bộ mã nguồn, dữ liệu huấn luyện mẫu và tài liệu hướng dẫn chi tiết của dự án PetCare AI được lưu trữ tại:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Địa chỉ repository:} \url{https://github.com/ictu-fit/petcare-ai-platform}
+    \item \textbf{Nhánh chính (Main branch):} \texttt{main}
+    \item \textbf{Giấy phép mã nguồn:} MIT License
+\end{itemize}
+
+\section{Cấu trúc thư mục dự án phần mềm}
+
+Dưới đây là sơ đồ tổ chức cây thư mục chuẩn của toàn bộ dự án PetCare AI:
+\begin{lstlisting}[language={}, caption={Cấu trúc cây thư mục mã nguồn dự án PetCare AI}, label={lst:tree}]
+petCare/
+|-- backend/                        # May chu Backend FastAPI (Python 3.12)
+|   |-- app/
+|   |   |-- ai/                     # Module AI Orchestrator & Providers
+|   |   |   |-- orchestrator.py     # Loi dieu phoi AI & Safety Rules
+|   |   |   |-- providers/          # Gemini, OpenAI, Ollama, Mock
+|   |   |   `-- data/               # Bo du lieu Fine-Tuning JSONL
+|   |   |-- api/v1/                 # Bo dinh tuyen API RESTful
+|   |   |   |-- auth.py             # Dang nhap, dang ky, JWT RBAC
+|   |   |   |-- pets.py             # Ho so thu cung, y ba, vac-xin
+|   |   |   |-- appointments.py     # Lich hen, goi y bac si
+|   |   |   |-- care_sessions.py    # Ca truc, WebSocket Live Care
+|   |   |   |-- inventory.py        # Kho duoc pham, tu dong tru kho
+|   |   |   |-- payments.py         # Cong thanh toan VietQR Napas247
+|   |   |   `-- telehealth.py       # Tin hieu WebRTC Video Call
+|   |   |-- core/                   # Cau hinh config, database, security
+|   |   |-- models/                 # Khai bao thuc the ORM (34 bang)
+|   |   |-- schemas/                # Lop kiem thuc Pydantic v2
+|   |   `-- workers/                # Celery Background Worker
+|   |-- tests/                      # Bo kiem thu tu dong Pytest (19 tests)
+|   |-- Dockerfile                  # Cau hinh dong goi Backend
+|   `-- requirements.txt            # Danh sach thu vien phu thuoc
+|-- web/                            # Ung dung Web Frontend Next.js 16
+|   |-- src/
+|   |   |-- app/                    # Next.js App Router (5 phan he)
+|   |   |   |-- admin/              # Portal Quan tri vien
+|   |   |   |-- veterinarian/       # Portal Bac si Thu y
+|   |   |   |-- receptionist/       # Portal Le tan tiep don
+|   |   |   |-- caregiver/          # Portal Dieu duong vien
+|   |   |   |-- customer/           # Portal Khach hang & Thu cung
+|   |   |   `-- shop/               # Sieu thi thu cung cong khai
+|   |   |-- components/             # Thu vien giao dien & TelehealthRoom
+|   |   `-- lib/                    # API Client Axios & WebSockets
+|   |-- package.json                # Cau hinh thu vien Node.js
+|   `-- next.config.ts              # Cau hinh Turbopack
+|-- docs/                           # Tai lieu kiem thu & Scorecard
+|-- docker-compose.yml              # File dieu phoi khoi chay toan bo he thong
+|-- .env.example                    # File mau cau hinh bien moi truong
+`-- README.md                       # Huong dan tong quan du an
+\end{lstlisting}

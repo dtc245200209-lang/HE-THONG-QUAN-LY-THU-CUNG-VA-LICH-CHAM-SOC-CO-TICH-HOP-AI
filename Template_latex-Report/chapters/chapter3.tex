@@ -1,0 +1,81 @@
+% ==============================================================================
+% CHƯƠNG 3: PHÂN TÍCH VÀ THIẾT KẾ ỨNG DỤNG AI
+% ==============================================================================
+
+\chapter{PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG}
+\label{chap:thietke}
+
+\section{Phân tích yêu cầu bài toán}
+\label{sec:yeucau}
+
+Hệ thống PetCare AI được thiết kế hướng tới giải quyết bài toán quản lý tập trung và tương tác thời gian thực cho 5 nhóm đối tượng người dùng chính theo mô hình kiểm soát truy cập dựa trên vai trò (Role-Based Access Control -- RBAC):
+
+\begin{table}[htbp]
+\centering
+\caption{Bảng phân tích yêu cầu chức năng theo 5 nhóm người dùng (RBAC)}
+\label{tab:rbac_requirements}
+\begin{tabularx}{\textwidth}{l p{2.8cm} X}
+    \toprule
+    \textbf{Vai trò} & \textbf{Phân hệ (Route)} & \textbf{Chức năng cốt lõi} \\
+    \midrule
+    \textbf{Quản trị viên (Admin)} & \texttt{/admin} & Quản lý người dùng, cấu hình Role, danh mục dịch vụ, kho dược phẩm, theo dõi KPI doanh thu, giám sát AI Orchestrator và Audit Logs. \\
+    \textbf{Bác sĩ Thú y (Doctor)} & \texttt{/veterinarian} & Tiếp nhận bệnh nhân, tạo bệnh án điện tử, kê đơn tự động trừ kho, cấp chứng nhận tiêm vắc-xin, xem phim X-quang và Telehealth Video Call. \\
+    \textbf{Lễ tân (Receptionist)} & \texttt{/receptionist} & Tiếp đón khách tại sảnh, điều phối lịch hẹn, kiểm tra phòng khám, thu ngân xuất hóa đơn VietQR Napas247 và check-in khách đến. \\
+    \textbf{Điều dưỡng (Caregiver)} & \texttt{/caregiver} & Xem lịch trực ca, nhận phân công chăm sóc, mở phiên trực tuyến gửi cập nhật realtime (Live Care) kèm ảnh và tạo báo cáo bằng AI. \\
+    \textbf{Khách hàng (Customer)} & \texttt{/customer} & Quản lý hồ sơ thú cưng, hộ chiếu điện tử (Pet Passport), kích hoạt thẻ QR khẩn cấp, Lost Pet Mode, chat với Trợ lý AI và đặt lịch hẹn. \\
+    \bottomrule
+\end{tabularx}
+\end{table}
+
+Bên cạnh yêu cầu chức năng trong \cref{tab:rbac_requirements}, hệ thống phải thỏa mãn các yêu cầu phi chức năng nghiêm ngặt:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Hiệu năng:} Thời gian phản hồi của Trợ lý AI dưới $650\text{ ms}$; độ trễ truyền phát WebSocket dưới $100\text{ ms}$.
+    \item \textbf{Độ tin cậy y khoa:} Đạt 100\% tỷ lệ an toàn, tuyệt đối không tự ý kê đơn hoặc chẩn đoán thay thế bác sĩ lâm sàng.
+    \item \textbf{Tính sẵn sàng:} Đóng gói toàn bộ các dịch vụ bằng container, hỗ trợ khôi phục tự động khi xảy ra sự cố.
+\end{itemize}
+
+\section{Kiến trúc tổng thể hệ thống}
+\label{sec:kientruc_hethong}
+
+Hệ thống được thiết kế theo kiến trúc Micro-services / Containerized đa tầng, vận hành độc lập bên trong mạng nội bộ Docker:
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Tầng Giao diện (Presentation Layer):} Ứng dụng Next.js phục vụ các trang tương tác người dùng, gọi RESTful API và duy trì kết nối WebSocket thời gian thực tới Backend.
+    \item \textbf{Tầng Dịch vụ (Application Layer):} FastAPI tiếp nhận request, xác thực JWT qua OAuth2, thực thi nghiệp vụ lâm sàng và định tuyến tới AI Engine.
+    \item \textbf{Tầng Tác vụ nền (Background Worker):} Celery độc lập xử lý các tác vụ nặng: quét lịch tiêm định kỳ, gửi email/thông báo thông minh và tổng hợp báo cáo.
+    \item \textbf{Tầng Dữ liệu (Data Layer):} PostgreSQL lưu trữ bền vững 34 thực thể nghiệp vụ; Redis làm bộ nhớ đệm cache và Message Broker cho Celery và WebSocket channels.
+\end{enumerate}
+
+\insertfigure[width=0.92\linewidth]{figures/chapter3/ai_pipeline.png}{Sơ đồ kiến trúc luồng xử lý và nhận diện của ứng dụng AI}{fig:pipeline}
+
+\section{Thiết kế AI Orchestrator và Pipeline Xử lý Dữ liệu}
+\label{sec:thietke_pipeline}
+
+Module \texttt{AIOrchestrator} đóng vai trò trung tâm điều phối mọi yêu cầu liên quan đến trí tuệ nhân tạo:
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{System Prompt Tiêu Chuẩn (8 Nguyên tắc vàng):}
+    \begin{itemize}
+        \item Chỉ trả lời câu hỏi liên quan đến thú cưng (chó, mèo);
+        \item Trình bày ngắn gọn, dễ hiểu, theo từng bước khi cần;
+        \item Nếu thiếu dữ liệu, chủ động hỏi thêm loài, tuổi, cân nặng và biểu hiện;
+        \item Tuyệt đối không tự chẩn đoán bệnh, không kê đơn hoặc chỉ định liều lượng thuốc;
+        \item Nhận diện dấu hiệu nguy hiểm (co giật, khó thở, chảy máu, ngộ độc) và phát cảnh báo cấp cứu ngay lập tức;
+        \item Không khẳng định thông tin khi chưa có cơ sở lâm sàng chắc chắn;
+        \item Từ chối các yêu cầu về nhân sự, doanh thu, bán hàng ngoài phạm vi;
+        \item Luôn hỗ trợ hướng dẫn đặt lịch hẹn khám trực tiếp với bác sĩ tại phòng khám.
+    \end{itemize}
+    \item \textbf{Pipeline Nhận Dạng Tài Liệu Y Bạ (AI Document Scanner):}
+    Hình ảnh sổ tiêm phòng hoặc đơn thuốc được người dùng tải lên sẽ được mã hóa Base64 và chuyển tiếp tới Vision Engine của Gemini. Mô hình tiến hành trích xuất cấu trúc JSON chứa: tên vắc-xin/thuốc, ngày tiêm, ngày hẹn tái chủng và ghi chú của bác sĩ. Dữ liệu này sau đó được hiển thị trên bảng đối soát để người dùng kiểm tra trước khi ghi nhận chính thức vào cơ sở dữ liệu.
+\end{enumerate}
+
+\section{Thiết kế Cơ sở Dữ liệu Quan hệ}
+\label{sec:thietke_csdl}
+
+Cơ sở dữ liệu của PetCare AI được thiết kế chuẩn hóa bậc 3 (3NF) với 34 thực thể nghiệp vụ, được phân chia thành 5 cụm bảng chức năng chính:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Cụm Người dùng \& Phân quyền:} \texttt{users}, \texttt{roles}, \texttt{user\_roles}, \texttt{audit\_logs}.
+    \item \textbf{Cụm Hồ sơ Thú cưng \& Y tế:} \texttt{pets}, \texttt{pet\_memberships}, \texttt{vaccinations}, \texttt{medical\_records}, \texttt{prescriptions}, \texttt{weights}, \texttt{qr\_codes}, \texttt{lost\_pet\_reports}.
+    \item \textbf{Cụm Dịch vụ \& Lịch hẹn:} \texttt{services}, \texttt{appointments}, \texttt{care\_sessions}, \texttt{care\_updates}.
+    \item \textbf{Cụm Thương mại \& Kho:} \texttt{products}, \texttt{orders}, \texttt{order\_items}, \texttt{payments}, \texttt{inventory\_items}, \texttt{inventory\_transactions}.
+    \item \textbf{Cụm Thời gian thực \& AI:} \texttt{notifications}, \texttt{ai\_conversations}, \texttt{ai\_messages}.
+\end{itemize}

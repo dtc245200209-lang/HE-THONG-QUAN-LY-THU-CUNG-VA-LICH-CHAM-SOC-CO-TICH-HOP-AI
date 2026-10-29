@@ -1,0 +1,58 @@
+% ==============================================================================
+% PHỤ LỤC B: HƯỚNG DẪN CÀI ĐẶT VÀ VẬN HÀNH
+% ==============================================================================
+
+\chapter{HƯỚNG DẪN CÀI ĐẶT VÀ VẬN HÀNH}
+\label{app:installation}
+
+\section{Yêu cầu hệ thống tối thiểu}
+
+Để triển khai và vận hành hệ thống PetCare AI, môi trường máy tính cần đáp ứng các yêu cầu sau:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Hệ điều hành:} Windows 10/11 64-bit (kích hoạt WSL 2), Ubuntu 22.04 LTS hoặc macOS 13+.
+    \item \textbf{Phần mềm nền tảng:} Docker Desktop v2.20+ kết hợp Docker Compose, Node.js 20+ và npm 10+.
+    \item \textbf{Bộ nhớ RAM:} Tối thiểu 8 GB RAM (khuyến nghị 16 GB để chạy đồng thời 4 containers và server phát triển web).
+    \item \textbf{Dung lượng ổ đĩa:} Trống tối thiểu 10 GB SSD.
+\end{itemize}
+
+\section{Các bước cài đặt và khởi động hệ thống}
+
+\subsection{Bước 1: Thiết lập biến môi trường}
+Sao chép tệp mẫu \texttt{.env.example} và cấu hình khóa API Gemini của Google AI Studio:
+\begin{lstlisting}[language=bash, caption={Tạo tệp cấu hình môi trường}]
+# Sao chep tep cau hinh mau
+cp .env.example .env
+
+# Dien khoa GEMINI_API_KEY cua ban vao tep .env
+GEMINI_API_KEY=AIzaSy...
+AI_PROVIDER=gemini
+GEMINI_MODEL=gemini-3.8-flash
+\end{lstlisting}
+
+\subsection{Bước 2: Khởi chạy cụm dịch vụ bằng Docker Compose}
+Tại thư mục gốc dự án \texttt{petCare/}, thực thi câu lệnh điều phối duy nhất:
+\begin{lstlisting}[language=bash, caption={Khởi chạy hệ thống 4 dịch vụ container}]
+docker compose up -d
+\end{lstlisting}
+Quá trình trên tự động kích hoạt:
+\begin{itemize}
+    \item \texttt{petcare\_db}: PostgreSQL 15 (Cổng 5432)
+    \item \texttt{petcare\_redis}: Redis 7 (Cổng 6379)
+    \item \texttt{petcare\_backend}: FastAPI API Server (Cổng 8001)
+    \item \texttt{petcare\_worker}: Celery Worker chạy ngầm lịch tiêm
+\end{itemize}
+
+\subsection{Bước 3: Khởi chạy Giao diện Frontend Web}
+Mở một cửa sổ terminal mới và khởi chạy ứng dụng Next.js:
+\begin{lstlisting}[language=bash, caption={Cài đặt gói và khởi chạy Next.js dev server}]
+cd web
+npm install
+npm run dev
+\end{lstlisting}
+
+Sau khi máy chủ khởi động thành công, truy cập các địa chỉ tương ứng trên trình duyệt:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Giao diện chính:} \url{http://localhost:3000}
+    \item \textbf{Siêu thị thú cưng:} \url{http://localhost:3000/shop}
+    \item \textbf{Tài liệu API Swagger UI:} \url{http://localhost:8001/docs}
+\end{itemize}

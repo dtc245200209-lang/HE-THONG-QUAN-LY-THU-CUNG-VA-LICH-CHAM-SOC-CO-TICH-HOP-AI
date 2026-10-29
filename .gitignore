@@ -1,0 +1,118 @@
+# ==========================================
+# Dependencies & Package Managers
+# ==========================================
+node_modules/
+*/node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# ==========================================
+# Python & Backend
+# ==========================================
+__pycache__/
+*/__pycache__/
+*/*/__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+*/venv/
+env/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==========================================
+# Next.js / Web Builds
+# ==========================================
+.next/
+*/.next/
+out/
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+
+# ==========================================
+# Mobile (React Native / Expo)
+# ==========================================
+.expo/
+android/.gradle/
+android/app/build/
+ios/build/
+ios/Pods/
+
+# ==========================================
+# Environment Variables & Secrets
+# ==========================================
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
+*.cert
+
+# ==========================================
+# Database & Docker Storage Volumes
+# ==========================================
+postgres_data/
+pgdata/
+minio_data/
+redis_data/
+
+# ==========================================
+# Large Binary Executables & Tools
+# ==========================================
+tools/*.exe
+tools/*.zip
+*.exe
+*.dll
+
+# ==========================================
+# LaTeX Temporary Build Files
+# ==========================================
+*.aux
+*.bbl
+*.blg
+*.idx
+*.ind
+*.ilg
+*.lof
+*.lot
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# ==========================================
+# OS & IDE Files
+# ==========================================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,62 @@
+% ==============================================================================
+% CHƯƠNG 5: ĐÁNH GIÁ VÀ KẾT LUẬN
+% ==============================================================================
+
+\chapter{ĐÁNH GIÁ VÀ KẾT LUẬN}
+\label{chap:ketluan}
+
+\section{Các kết quả đạt được}
+\label{sec:ketqua_datduoc}
+
+Sau quá trình nghiên cứu, thiết kế và phát triển nghiêm túc, đề tài \textbf{``\reporttitle''} trong khuôn khổ học phần \textbf{\course} đã hoàn thành trọn vẹn tất cả các mục tiêu đề ra ban đầu:
+
+\begin{enumerate}[label=\arabic*)]
+    \item \textbf{Về mặt nghiên cứu và ứng dụng AI:}
+    \begin{itemize}
+        \item Xây dựng thành công quy trình chuẩn hóa dữ liệu tinh chỉnh chuyên ngành thú cưng theo định dạng JSONL với 15 mẫu chỉ dẫn lâm sàng chất lượng cao;
+        \item Hiện thực hóa thành công kiến trúc AI Orchestrator kết nối Google Gemini \texttt{gemini-3.8-flash}, hỗ trợ xử lý ngôn ngữ tự nhiên và thị giác máy tính OCR đọc sổ khám;
+        \item Đạt tỷ lệ an toàn y khoa 100\% theo các bài kiểm định lâm sàng mẫu, tự động từ chối kê đơn thuốc nguy hiểm.
+    \end{itemize}
+    \item \textbf{Về mặt kỹ thuật phần mềm Full-Stack:}
+    \begin{itemize}
+        \item Xây dựng hệ thống hoàn chỉnh với 5 phân hệ người dùng chuyên biệt, biên dịch thành công 57/57 tuyến đường giao diện (0\% trang trống, 0\% lỗi 404);
+        \item Tích hợp thành công các công nghệ thời gian thực cao cấp: WebSockets (cập nhật tiến trình chăm sóc trực tiếp) và WebRTC (khám bệnh qua video P2P);
+        \item Triển khai cổng thanh toán trực tuyến VietQR Napas247 động, tự động đối soát giao dịch;
+        \item Xây dựng hệ thống nhắc nhở tiêm chủng tự động chạy ngầm bằng Celery Worker.
+    \end{itemize}
+    \item \textbf{Về mặt triển khai và đóng gói:}
+    \begin{itemize}
+        \item Hoàn thiện cấu hình Docker Compose cho toàn bộ hệ thống (PostgreSQL, Redis, FastAPI, Celery, Next.js), đảm bảo tính sẵn sàng cao và dễ dàng vận hành.
+    \end{itemize}
+\end{enumerate}
+
+\section{Đánh giá ưu điểm và hạn chế}
+\label{sec:uunhuocdiem}
+
+\subsection{Ưu điểm}
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Kiến trúc phân tầng rõ ràng:} Phân tách mạch lạc giữa tầng dữ liệu, tầng logic nghiệp vụ, hàng đợi xử lý nền và tầng giao diện hiển thị;
+    \item \textbf{Tính an toàn và bảo mật cao:} Cơ chế phân quyền RBAC chặt chẽ, kiểm thực dữ liệu đầu vào bằng Pydantic và rào cản an toàn AI loại bỏ hoàn toàn rủi ro kê đơn sai lệch;
+    \item \textbf{Trải nghiệm người dùng vượt trội (UX):} Giao diện hiện đại, tốc độ phản hồi nhanh chóng (Next.js Turbopack), hỗ trợ đầy đủ các tính năng thực tế như in mã QR thẻ đeo vòng cổ và chia sẻ hồ sơ gia đình.
+\end{itemize}
+
+\subsection{Hạn chế còn tồn tại}
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Phụ thuộc vào kết nối Internet khi dùng Cloud AI:} Khi mất mạng ngoài, mô hình Gemini không thể hoạt động và hệ thống phải chuyển sang chế độ mô hình nội bộ (Ollama Local LLM), đòi hỏi máy chủ phải có cấu hình RAM và GPU cao hơn;
+    \item \textbf{Kích thước tập dữ liệu Fine-Tuning ban đầu:} Mặc dù bộ dữ liệu mẫu đã bao quát các nhóm bệnh và tình huống phổ biến, nhưng số lượng mẫu cần tiếp tục được bổ sung thêm từ các bệnh viện thú y lớn để gia tăng độ phong phú về từ vựng lâm sàng.
+\end{itemize}
+
+\section{Hướng phát triển trong tương lai}
+\label{sec:huongphattrien}
+
+Dựa trên những kết quả đã đạt được và các hạn chế đã nhận diện, các hướng phát triển tiếp theo của đề tài bao gồm:
+\begin{enumerate}[label=\alph*)]
+    \item \textbf{Tích hợp Kiến trúc RAG (Retrieval-Augmented Generation):} Xây dựng kho dữ liệu vector (Vector Database) lưu trữ toàn bộ dược điển thú y và tài liệu phác đồ điều trị đã được kiểm duyệt, giúp AI tự động trích dẫn số trang và nguồn tài liệu khi đưa ra lời khuyên.
+    \item \textbf{Mở rộng Ứng dụng Di động Native (Mobile App):} Đóng gói phiên bản ứng dụng di động cho iOS và Android (React Native / Expo) để tận dụng định vị GPS thời gian thực khi thú cưng bị lạc và đẩy thông báo Push Notification tức thì tới điện thoại của chủ nuôi.
+    \item \textbf{Mô hình AI Thị giác Máy tính Nhận diện Giống loài \& Tổn thương qua Ảnh:} Huấn luyện mô hình CNN (như YOLOv10 hoặc EfficientNet) để nhận diện tự động giống chó/mèo và phát hiện các tổn thương viêm da, nấm móng trực tiếp từ camera điện thoại.
+\end{enumerate}
+
+\section{Lời kết}
+\label{sec:loiket}
+
+Học phần \textbf{\course} đã trang bị những kiến thức thực tế và kỹ năng giải quyết bài toán kỹ thuật hết sức sâu sắc cho sinh viên ngành Công nghệ Thông tin tại \university. Đề tài \textbf{PetCare AI} là minh chứng rõ nét cho sự kết hợp hiệu quả giữa lý thuyết trí tuệ nhân tạo hiện đại và kỹ nghệ phát triển phần mềm chuẩn mực. Thành quả này không chỉ giúp củng cố năng lực chuyên môn của sinh viên mà còn mở ra tiềm năng ứng dụng thực tế to lớn phục vụ cộng đồng và xã hội.

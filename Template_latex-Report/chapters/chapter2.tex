@@ -1,0 +1,71 @@
+% ==============================================================================
+% CHƯƠNG 2: CƠ SỞ LÝ THUYẾT VÀ CÔNG NGHỆ
+% ==============================================================================
+
+\chapter{CƠ SỞ LÝ THUYẾT VÀ CÔNG NGHỆ}
+\label{chap:cossolythuyet}
+
+\section{Tổng quan về Mô hình Ngôn ngữ Lớn và Tinh chỉnh chỉ thị (SFT)}
+\label{sec:kientruc_ai}
+
+Mô hình ngôn ngữ lớn (Large Language Models -- LLMs) là các mạng nơ-ron học sâu dựa trên kiến trúc Transformer với cơ chế tự chú ý đa đầu (Multi-Head Self-Attention) \cite{vaswani2017attention}. Trong giai đoạn tiền huấn luyện (Pre-training) trên các tập ngữ liệu khổng lồ, mục tiêu của mô hình là tối đa hóa hàm hợp lý của từ tiếp theo dựa trên chuỗi từ ngữ cảnh trước đó:
+\begin{equation}
+    \mathcal{L}_{\text{pretrain}}(\vect{\theta}) = -\sum_{i=1}^{N} \log P(w_i \mid w_1, w_2, \dots, w_{i-1}; \vect{\theta})
+    \label{eq:pretrain_loss}
+\end{equation}
+trong đó $\vect{\theta}$ là tập hợp các trọng số mạng nơ-ron và $w_i$ là token tại vị trí thứ $i$.
+
+Tuy nhiên, mô hình nền tảng tiền huấn luyện chỉ có khả năng hoàn thiện văn bản một cách ngẫu nhiên và dễ sinh ra nội dung không mong muốn. Để mô hình trở thành một trợ lý thông minh, tuân thủ nghiệp vụ chăm sóc thú y và chuẩn mực an toàn y tế, kỹ thuật \textbf{Tinh chỉnh có giám sát (Supervised Fine-Tuning -- SFT)} được áp dụng. Tập dữ liệu huấn luyện bao gồm các bộ ba chỉ dẫn:
+\begin{equation}
+    \mathcal{D} = \left\{ \left(x_{\text{instruction}}^{(j)}, x_{\text{input}}^{(j)}, y_{\text{output}}^{(j)}\right) \right\}_{j=1}^{M}
+    \label{eq:sft_dataset}
+\end{equation}
+
+Hàm mất mát cho quá trình tinh chỉnh chỉ thị được xác định bởi:
+\begin{equation}
+    \mathcal{L}_{\text{SFT}}(\vect{\theta}) = -\sum_{j=1}^{M} \sum_{t=1}^{|y^{(j)}|} \log P\left(y_t^{(j)} \mid x_{\text{instruction}}^{(j)}, x_{\text{input}}^{(j)}, y_{<t}^{(j)}; \vect{\theta}\right)
+    \label{eq:sft_loss}
+\end{equation}
+
+Thông qua tối ưu hóa hàm mất mát \cref{eq:sft_loss}, mô hình học được phong cách phản hồi chuẩn mực: trả lời ngắn gọn, phân tách bước rõ ràng, chủ động hỏi thêm thông tin thiếu và kiên quyết từ chối các lĩnh vực nằm ngoài phạm vi y khoa thú cưng.
+
+\section{Kiểm soát An toàn Y khoa (Medical Safety Guardrails)}
+\label{sec:guardrails}
+
+Trong bài toán ứng dụng AI vào sức khỏe, thách thức lớn nhất là hiện tượng ``ảo giác'' (hallucination), khi mô hình tự bịa đặt tên thuốc kháng sinh, chỉ định liều lượng dùng hoặc khuyên người dùng tự điều trị tại nhà trong các ca nguy kịch. Nhằm loại bỏ triệt để rủi ro này, đề tài đã thiết kế khung an toàn đa tầng bao gồm ba chốt chặn:
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Tầng 1 -- Phân loại phạm vi (In-scope Filter):} Tự động phát hiện và từ chối lịch sự các câu hỏi không liên quan đến sức khỏe thú cưng (như câu hỏi về doanh thu, nhân sự, chính trị hoặc động vật hoang dã).
+    \item \textbf{Tầng 2 -- Giám sát nguy cấp (Emergency Radar):} Quét ngữ nghĩa các từ khóa và biểu hiện nguy hiểm (co giật, khó thở, chảy máu nhiều, sốc phản vệ, nuốt dị vật); ngay lập tức phát tín hiệu cảnh báo khẩn cấp và hướng dẫn sơ cứu cơ bản trước khi đưa tới cơ sở thú y.
+    \item \textbf{Tầng 3 -- Rào cản kê đơn (Non-Prescribe Guard):} Tuyệt đối ngăn chặn hành vi đưa ra tên thuốc đặc trị hoặc liều lượng dược phẩm cụ thể; định hướng người dùng đưa thú cưng đến phòng khám để bác sĩ lâm sàng thăm khám trực tiếp.
+\end{enumerate}
+
+\section{Các công nghệ và thư viện phát triển}
+\label{sec:congnghe}
+
+Hệ thống PetCare AI được xây dựng dựa trên sự kết hợp giữa các công nghệ hiện đại nhất trong phát triển ứng dụng phân tán và trí tuệ nhân tạo:
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Hậu đài (Backend):}
+    \begin{itemize}
+        \item \textbf{FastAPI (Python 3.12):} Framework web bất đồng bộ tốc độ cao, hỗ trợ kiểm thực dữ liệu qua Pydantic v2 và tự động tạo tài liệu OpenAPI Swagger UI \cite{ramirez2024fastapi}.
+        \item \textbf{SQLAlchemy 2.0 ORM:} Quản lý cơ sở dữ liệu quan hệ hướng đối tượng an toàn, ngăn chặn lỗi SQL Injection.
+        \item \textbf{Celery 5.3 + Redis 7:} Hệ thống điều phối hàng đợi tác vụ nền (Distributed Task Queue) phục vụ việc chạy định kỳ thuật toán nhắc nhở thông minh và thông báo tiêm phòng.
+        \item \textbf{WebSockets \& WebRTC:} Duy trì luồng truyền thông hai chiều thời gian thực (Live Care Session) và truyền phát hình ảnh/âm thanh ngang hàng phục vụ khám từ xa (Telehealth Video Call).
+    \end{itemize}
+    \item \textbf{Tiền đài (Frontend):}
+    \begin{itemize}
+        \item \textbf{Next.js 16 (React 19, TypeScript):} Kiến trúc App Router kết hợp trình biên dịch Turbopack, tối ưu hóa quá trình tải trang thông qua Server-Side Rendering (SSR) \cite{nextjs2024}.
+        \item \textbf{Tailwind CSS \& Lucide Icons:} Xây dựng hệ thống giao diện nhất quán, trực quan, hỗ trợ tương thích hoàn toàn trên thiết bị máy tính để bàn và máy tính bảng.
+    \end{itemize}
+    \item \textbf{Cơ sở dữ liệu \& Lưu trữ:}
+    \begin{itemize}
+        \item \textbf{PostgreSQL 15:} Hệ quản trị cơ sở dữ liệu quan hệ mạnh mẽ, đảm bảo tính toàn vẹn dữ liệu giao dịch (ACID).
+        \item \textbf{Redis 7:} Bộ nhớ đệm (In-memory Cache) tốc độ cao và Message Broker cho các kênh thông báo.
+    \end{itemize}
+    \item \textbf{Hệ sinh thái Trí tuệ Nhân tạo:}
+    \begin{itemize}
+        \item \textbf{Google Generative AI SDK:} Tích hợp mô hình \texttt{gemini-3.8-flash} cho độ trễ phản hồi cực thấp ($<650\text{ ms}$) và năng lực thị giác máy tính OCR đọc sổ tiêm \cite{gemini2023}.
+        \item \textbf{OpenAI API \& Ollama Local Engine:} Tùy chọn chuyển đổi linh hoạt sang GPT-4o-mini hoặc vận hành ngoại tuyến với mô hình LLaMA-3 (\texttt{llama3:8b}) khi không có kết nối mạng ngoài.
+    \end{itemize}
+\end{itemize}

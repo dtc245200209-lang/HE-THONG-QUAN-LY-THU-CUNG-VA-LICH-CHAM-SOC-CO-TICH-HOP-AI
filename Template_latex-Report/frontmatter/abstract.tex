@@ -1,0 +1,23 @@
+% ==============================================================================
+% FRONTMATTER: ABSTRACT.TEX
+% Tóm tắt báo cáo học phần và từ khóa nghiên cứu (Keywords).
+% ==============================================================================
+
+\chapter*{TÓM TẮT BÁO CÁO}
+\addcontentsline{toc}{chapter}{TÓM TẮT BÁO CÁO}
+
+Báo cáo học phần \textbf{\course} với đề tài \textbf{``\reporttitle''} trình bày quá trình nghiên cứu, thiết kế và phát triển một giải pháp phần mềm thông minh toàn diện (End-to-End Full-Stack AI System), kết hợp giữa mô hình ngôn ngữ lớn (Large Language Models -- LLM), kỹ thuật tinh chỉnh chỉ thị (Supervised Fine-Tuning -- SFT), công nghệ nhận dạng ký tự quang học (OCR) cùng hệ thống quản lý phòng khám thời gian thực (Real-time Full-Stack Clinic Platform).
+
+Trước sự phát triển mạnh mẽ của ngành dịch vụ chăm sóc thú cưng và nhu cầu số hóa quy trình y tế, bài toán đặt ra là xây dựng một nền tảng vừa đáp ứng nghiệp vụ quản lý lâm sàng phức tạp (quản lý bệnh án, hộ chiếu số, kho thuốc, điều phối lịch hẹn), vừa tích hợp trí tuệ nhân tạo để giải quyết bài toán tư vấn chăm sóc, cảnh báo sức khỏe và sàng lọc dấu hiệu nguy cấp với độ an toàn y khoa cao. Mục tiêu cốt lõi của đề tài bao gồm:
+\begin{enumerate}[label=\arabic*)]
+    \item Xây dựng bộ dữ liệu huấn luyện và tinh chỉnh chuyên biệt cho lĩnh vực thú cưng (chó, mèo), thiết lập khung kiểm soát an toàn y tế (Safety \& Medical Non-prescribe Guardrails) nghiêm ngặt;
+    \item Tích hợp AI Orchestrator đa tầng hỗ trợ cả API đám mây (Google Gemini / OpenAI) và mô hình cục bộ (Ollama Local LLM), kết hợp module AI Document OCR đọc bệnh án;
+    \item Hiện thực hóa kiến trúc Full-Stack thời gian thực gồm 5 phân hệ độc lập: Quản trị viên (Admin), Bác sĩ thú y (Veterinarian), Lễ tân (Receptionist), Điều dưỡng (Caregiver) và Khách hàng (Customer), hỗ trợ WebSockets, WebRTC Video Call và cổng thanh toán VietQR Napas247.
+\end{enumerate}
+
+Kết quả thực nghiệm cho thấy hệ thống AI đạt tỷ lệ chính xác và tuân thủ nguyên tắc an toàn 100\% (6/6 ca kiểm thử lâm sàng mẫu), tự động từ chối kê đơn thuốc nguy hiểm và phản hồi nhanh chóng với độ trễ trung bình dưới 650~ms. Toàn bộ ứng dụng đã được đóng gói container hóa hoàn chỉnh qua Docker Compose, sẵn sàng vận hành thực tế.
+
+\vspace{1.0cm}
+\noindent\textbf{Từ khóa:} Trí tuệ nhân tạo, Mô hình ngôn ngữ lớn (LLM), Fine-Tuning (SFT), AI Orchestrator, Quản lý phòng khám thú y, FastAPI, Next.js, Docker, Khoa Công nghệ Thông tin ICTU.
+
+\clearpage

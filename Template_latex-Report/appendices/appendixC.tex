@@ -1,0 +1,49 @@
+% ==============================================================================
+% PHỤ LỤC C: KẾT QUẢ THỰC NGHIỆM VÀ SIÊU THAM SỐ
+% ==============================================================================
+
+\chapter{KẾT QUẢ THỰC NGHIỆM VÀ SIÊU THAM SỐ}
+\label{app:hyperparams}
+
+\section{Bảng tổng hợp tham số suy luận và cấu hình an toàn AI}
+
+\cref{tab:hyperparams} cung cấp chi tiết toàn bộ các giá trị cấu hình của mô hình AI Orchestrator được áp dụng trong quá trình vận hành hệ thống nhằm đảm bảo tính nhất quán và tuân thủ chuẩn an toàn y tế.
+
+\begin{table}[htbp]
+\centering
+\caption{Bảng thiết lập tham số suy luận và cấu hình an toàn AI Orchestrator}
+\label{tab:hyperparams}
+\begin{tabularx}{\textwidth}{l l X}
+    \toprule
+    \textbf{Tham số} & \textbf{Giá trị thiết lập} & \textbf{Mục đích / Ý nghĩa} \\
+    \midrule
+    Mô hình nền tảng (Base LLM) & \texttt{gemini-3.8-flash} & Tốc độ sinh từ nhanh ($<650\text{ ms}$), hỗ trợ tiếng Việt xuất sắc \\
+    Nhiệt độ (Temperature)     & 0.2                       & Giảm tính ngẫu nhiên, giúp phản hồi nhất quán theo y khoa \\
+    Top-p (Nucleus Sampling)    & 0.85                      & Giới hạn phân phối từ vựng trong vùng an toàn \\
+    Độ dài đầu ra tối đa        & 1024 tokens               & Đảm bảo câu trả lời súc tích, tránh lan man \\
+    Bộ lọc an toàn (Safety)    & \texttt{BLOCK\_MEDIUM}    & Ngăn chặn nội dung tự gây hại, bạo lực và kê đơn thuốc \\
+    Giao thức điều phối         & Asynchronous              & Xử lý hàng trăm phiên tư vấn đồng thời không nghẽn luồng \\
+    \bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Danh sách tài khoản kiểm thử hệ thống theo từng vai trò}
+
+Để phục vụ công tác nghiệm thu và kiểm thử các tính năng phân quyền RBAC, \cref{tab:test_accounts} cung cấp danh mục tài khoản mẫu được khởi tạo sẵn trong cơ sở dữ liệu:
+
+\begin{table}[htbp]
+\centering
+\caption{Bảng thông tin các tài khoản demo kiểm thử theo từng vai trò}
+\label{tab:test_accounts}
+\begin{tabularx}{\textwidth}{l p{4.6cm} l X}
+    \toprule
+    \textbf{Vai trò} & \textbf{Email đăng nhập} & \textbf{Mật khẩu} & \textbf{Tuyến đường (Route)} \\
+    \midrule
+    \textbf{Quản trị viên} & \texttt{admin@petcare.local} & \texttt{admin123} & \texttt{/admin} \\
+    \textbf{Bác sĩ Thú y} & \texttt{doctor@petcare.local} & \texttt{doctor123} & \texttt{/veterinarian} \\
+    \textbf{Lễ tân sảnh} & \texttt{reception@petcare.local} & \texttt{reception123} & \texttt{/receptionist} \\
+    \textbf{Điều dưỡng} & \texttt{caregiver@petcare.local} & \texttt{caregiver123} & \texttt{/caregiver} \\
+    \textbf{Chủ nuôi} & \texttt{customer01@petcare.local} & \texttt{customer123} & \texttt{/customer} \\
+    \bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,82 @@
+% ==============================================================================
+% CHƯƠNG 1: TỔNG QUAN VỀ ĐỀ TÀI
+% ==============================================================================
+
+\chapter{TỔNG QUAN VỀ ĐỀ TÀI}
+\label{chap:tongquan}
+
+\section{Bối cảnh và tính cấp thiết của đề tài}
+\label{sec:boicanh}
+
+Trong kỷ nguyên chuyển đổi số và cuộc cách mạng công nghiệp 4.0, Trí tuệ nhân tạo (AI), đặc biệt là các Mô hình ngôn ngữ lớn (Large Language Models -- LLMs), đã trở thành động lực quan trọng thúc đẩy sự đổi mới phương thức vận hành trong nhiều ngành kinh tế và y tế \cite{goodfellow2016deeplearning,achiam2023gpt4}. Tại Việt Nam cũng như trên thế giới, ngành dịch vụ thú cưng (Pet Care Industry) đang chứng kiến tốc độ tăng trưởng vượt bậc với tỷ lệ trên 15\% mỗi năm. Thú cưng ngày nay không đơn thuần là vật nuôi giữ nhà mà được coi như những thành viên thân thiết trong gia đình.
+
+Tuy nhiên, phần lớn các phòng khám và cơ sở chăm sóc thú cưng hiện nay vẫn đang vận hành theo phương thức truyền thống hoặc sử dụng các phần mềm rời rạc, bộc lộ nhiều bất cập nghiêm trọng:
+\begin{itemize}[leftmargin=1.5cm]
+    \item Hồ sơ y tế, lịch sử tiêm vắc-xin và đơn thuốc chủ yếu được ghi chép trên sổ giấy hoặc file bảng tính Excel đơn giản, dễ thất lạc và không thể tra cứu tức thì khi cấp cứu;
+    \item Khi thú cưng gặp vấn đề sức khỏe bất thường ngoài giờ làm việc, chủ nuôi thường hoang mang, tự ý tra cứu thông tin không kiểm chứng trên Internet hoặc cho thú cưng dùng thuốc của người (như Paracetamol, Ibuprofen), dẫn đến nhiều tai biến ngộ độc tử vong đáng tiếc;
+    \item Thiếu kênh kết nối thời gian thực giữa bác sĩ, điều dưỡng nội trú và chủ nuôi trong suốt quá trình lưu chuồng hay điều trị;
+    \item Thú cưng thất lạc khó tìm lại do thẻ tên truyền thống thiếu thông tin y tế cấp cứu và mã định danh số hóa.
+\end{itemize}
+
+Xuất phát từ thực trạng trên, việc nghiên cứu và xây dựng một \textbf{``\reporttitle''} là đề tài mang tính thời sự, cấp thiết và có giá trị ứng dụng thực tiễn cao tại \university.
+
+\section{Lý do chọn đề tài}
+\label{sec:lydo}
+
+Việc lựa chọn đề tài xuất phát từ ba lý do cốt lõi:
+\begin{enumerate}[label=\arabic*)]
+    \item \textbf{Làm chủ quy trình phát triển ứng dụng AI hoàn chỉnh (End-to-End AI Engineering):} Đề tài giúp sinh viên vận dụng toàn diện kiến thức học phần \course, từ thu thập dữ liệu chuyên ngành, thiết kế bộ chỉ dẫn (System Prompt), tinh chỉnh mô hình ngôn ngữ (SFT/Fine-Tuning), xây dựng khung đánh giá an toàn y khoa, cho đến tích hợp API vào phần mềm thực tế.
+    \item \textbf{Xây dựng hệ sinh thái phần mềm Full-Stack hiện đại:} Dự án kết hợp các công nghệ tiên tiến nhất bao gồm FastAPI, Next.js (App Router, Turbopack), PostgreSQL, Redis, Celery Worker, WebSockets và WebRTC, mang lại cái nhìn toàn diện về kiến trúc phần mềm hướng dịch vụ phân tán.
+    \item \textbf{Ý nghĩa cộng đồng và nhân văn:} Cung cấp giải pháp bảo vệ sức khỏe động vật, hỗ trợ bác sĩ giảm tải áp lực tư vấn ban đầu, đồng thời hỗ trợ chủ nuôi tiếp cận kiến thức khoa học và an toàn.
+\end{enumerate}
+
+\section{Mục tiêu nghiên cứu}
+\label{sec:muctieu}
+
+Mục tiêu tổng quát của đề tài là xây dựng thành công hệ sinh thái PetCare AI đáp ứng các yêu cầu kỹ thuật và nghiệp vụ thực tế:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Mục tiêu 1 (Dữ liệu \& AI Tuning):} Thu thập, làm sạch và xây dựng bộ dữ liệu huấn luyện JSONL chuyên biệt cho chăm sóc thú cưng; thiết lập 8 nguyên tắc ứng xử và rào cản an toàn y tế (Safety Guardrails) để ngăn ngừa hiện tượng ảo giác (hallucination) và kê đơn trái phép.
+    \item \textbf{Mục tiêu 2 (AI Orchestrator):} Xây dựng bộ điều phối AI linh hoạt hỗ trợ đa nguồn: Google Gemini (mô hình chính \texttt{gemini-3.8-flash}), OpenAI GPT-4o-mini và tùy chọn Ollama Local LLM (\texttt{llama3:8b}); tích hợp cơ chế nhận dạng tài liệu y bạ (AI Document OCR).
+    \item \textbf{Mục tiêu 3 (Phát triển Hệ thống Full-Stack):} Hiện thực hóa 5 cổng phân hệ nghiệp vụ độc lập (Admin, Veterinarian, Receptionist, Caregiver, Customer), tích hợp thông báo thời gian thực qua WebSocket, WebRTC Video Call khám bệnh từ xa và thanh toán VietQR Napas247.
+    \item \textbf{Mục tiêu 4 (Đóng gói \& Kiểm thử):} Đóng gói toàn bộ giải pháp bằng Docker Compose, hoàn thành 100\% các ca kiểm thử hồi quy và kiểm thử lâm sàng.
+\end{itemize}
+
+\section{Đối tượng và phạm vi nghiên cứu}
+\label{sec:phamvi}
+
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Đối tượng nghiên cứu:} 
+    \begin{itemize}
+        \item Các kỹ thuật học sâu và xử lý ngôn ngữ tự nhiên: Mô hình ngôn ngữ lớn (LLM), kỹ thuật Supervised Fine-Tuning (SFT), Prompt Engineering;
+        \item Nghiệp vụ lâm sàng thú y: Phác đồ tiêm vắc-xin, biểu hiện nguy cấp của chó/mèo, quản lý kho thuốc và bệnh án điện tử;
+        \item Kiến trúc ứng dụng phân tán thời gian thực (FastAPI + Next.js + Redis Pub/Sub).
+    \end{itemize}
+    \item \textbf{Phạm vi nghiên cứu:} 
+    \begin{itemize}
+        \item Giới hạn trong phạm vi tư vấn sức khỏe cơ bản, dinh dưỡng, hành vi và hỗ trợ đặt lịch cho chó, mèo;
+        \item Hệ thống đóng vai trò hỗ trợ tham khảo, tuyệt đối không thay thế hoàn toàn chẩn đoán chuyên sâu và phẫu thuật của bác sĩ thú y;
+        \item Triển khai và thử nghiệm trên môi trường máy chủ cục bộ và Docker container.
+    \end{itemize}
+\end{itemize}
+
+\section{Phương pháp tiếp cận}
+\label{sec:phuongphap}
+
+Đề tài áp dụng phương pháp luận kết hợp chặt chẽ giữa nghiên cứu lý thuyết nền tảng và triển khai thực nghiệm theo quy trình công nghệ phần mềm:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{Nghiên cứu lý thuyết:} Khảo sát các tài liệu y khoa thú y chuẩn, hướng dẫn chăm sóc thú cưng của các tổ chức quốc tế và các bài báo khoa học về LLM, Fine-Tuning và RAG \cite{goodfellow2016deeplearning,vaswani2017attention,achiam2023gpt4}.
+    \item \textbf{Thực nghiệm kỹ thuật:} Áp dụng mô hình phát triển phần mềm lặp (Iterative Agile): Xây dựng lõi cơ sở dữ liệu và API Backend $\rightarrow$ Huấn luyện và đánh giá AI $\rightarrow$ Phát triển giao diện Web Frontend $\rightarrow$ Tích hợp Realtime và Kiểm thử hồi quy tự động (Pytest).
+\end{itemize}
+
+\section{Cấu trúc của báo cáo}
+\label{sec:cautruc}
+
+Nội dung của báo cáo học phần được tổ chức thành 5 chương chính và 3 phần phụ lục:
+\begin{itemize}[leftmargin=1.5cm]
+    \item \textbf{\cref{chap:tongquan} -- Tổng quan về đề tài:} Trình bày bối cảnh, lý do chọn đề tài, mục tiêu, đối tượng, phạm vi và phương pháp tiếp cận.
+    \item \textbf{\cref{chap:cossolythuyet} -- Cơ sở lý thuyết và công nghệ:} Khái quát kiến trúc Transformer, kỹ thuật tinh chỉnh chỉ thị SFT, khung an toàn y tế và hệ sinh thái công nghệ sử dụng.
+    \item \textbf{\cref{chap:thietke} -- Phân tích và thiết kế hệ thống:} Mô tả yêu cầu 5 phân hệ người dùng, kiến trúc đa container, thiết kế AI Orchestrator và mô hình dữ liệu quan hệ 34 thực thể.
+    \item \textbf{\cref{chap:trienkhai} -- Triển khai và thực nghiệm:} Chi tiết hóa mã nguồn lõi AI, động cơ nhắc nhở thông minh, bảng kết quả kiểm thử lâm sàng và kiểm thử hồi quy tự động.
+    \item \textbf{\cref{chap:ketluan} -- Đánh giá và kết luận:} Tổng kết kết quả đạt được, phân tích ưu nhược điểm, đề xuất hướng phát triển và lời kết.
+    \item \textbf{Phụ lục A, B, C:} Cung cấp mã nguồn, hướng dẫn cài đặt vận hành và bảng thiết lập siêu tham số.
+\end{itemize}

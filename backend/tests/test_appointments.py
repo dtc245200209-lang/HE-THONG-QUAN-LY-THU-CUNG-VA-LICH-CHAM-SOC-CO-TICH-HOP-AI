@@ -7,6 +7,7 @@ from datetime import datetime, timezone, timedelta
 from app.models.appointment import Appointment, Service, AppointmentStatus, ServiceCategory
 from app.models.care_session import CareSession, CareSessionStatus
 from app.models.user import User, Role
+from app.models.pet import Pet, PetSpecies
 
 def get_token_headers(client: TestClient, role_name: str = "CUSTOMER"):
     email = f"{role_name.lower()}@example.com"
@@ -30,6 +31,7 @@ def get_token_headers(client: TestClient, role_name: str = "CUSTOMER"):
 
 def test_create_appointment(client: TestClient, db: Session):
     headers, _ = get_token_headers(client)
+    
     # First create a service
     service = Service(
         id=uuid4(),
@@ -40,8 +42,13 @@ def test_create_appointment(client: TestClient, db: Session):
     )
     db.add(service)
     db.commit()
-    
-    pet_id = uuid4()
+
+    pet_res = client.post(
+        "/api/v1/pets/",
+        headers=headers,
+        json={"name": "Test Doggy", "species": "DOG"}
+    )
+    pet_id = pet_res.json()["id"]
     
     response = client.post(
         "/api/v1/appointments/",

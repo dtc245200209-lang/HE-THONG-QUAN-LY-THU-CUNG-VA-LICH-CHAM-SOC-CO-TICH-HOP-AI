@@ -118,13 +118,14 @@ async def get_health_insight(
 @router.post("/chat", response_model=AIChatResponse)
 async def chat_with_ai(
     request: AIChatRequest,
+    db: Session = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
     """
     General AI chat endpoint for answering pet care queries.
     """
     user_role_str = current_user.roles[0].name if current_user and current_user.roles else "customer"
-    response = await ai_orchestrator.chat(request, user_role=user_role_str)
+    response = await ai_orchestrator.chat(request, db=db, user_role=user_role_str)
     return response
 
 from fastapi.responses import StreamingResponse

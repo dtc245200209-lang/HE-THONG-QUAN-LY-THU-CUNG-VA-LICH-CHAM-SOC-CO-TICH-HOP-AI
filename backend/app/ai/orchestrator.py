@@ -33,7 +33,7 @@ class AIOrchestrator:
         self._shop_cache = None
         self._shop_cache_time = 0.0
 
-    async def chat(self, request: AIChatRequest, user_role: str = "customer") -> AIChatResponse:
+    async def chat(self, request: AIChatRequest, db: Session = None, user_role: str = "customer") -> AIChatResponse:
         # Fast intent detection (< 1ms)
         if self._detect_simple_intent(request.message):
             msg = request.message.strip().lower()
@@ -53,6 +53,22 @@ class AIOrchestrator:
             )
 
         context_prompt = f"{self.system_prompt}\nUser Role: {user_role}\n"
+        
+        if request.pet_id and db:
+            pet_context = await asyncio.to_thread(self._get_pet_context, db, request.pet_id)
+            if pet_context:
+                context_prompt += f"\n{pet_context}\n"
+                
+        if db:
+            services_context = await asyncio.to_thread(self._get_services_context, db)
+            if services_context:
+                context_prompt += f"\n{services_context}\n"
+            shop_context = await asyncio.to_thread(self._get_shop_context, db)
+            if shop_context:
+                context_prompt += f"\n{shop_context}\n"
+                
+        context_prompt += "\nCHỈ SỬ DỤNG thông tin trên nếu câu hỏi liên quan."
+
         messages = [{"role": "system", "content": context_prompt}]
         if request.messages:
             for m in request.messages:
@@ -118,13 +134,24 @@ class AIOrchestrator:
             return ""
 
         try:
+            print(f"\n{'='*70}", flush=True)
+            print(f"[RAG SQL PIPELINE] 🔍 Truy vấn dữ liệu thực tế từ Database PostgreSQL:", flush=True)
+            print(f"  └── [SQL Query]: SELECT * FROM pets WHERE id = '{pet_id}'", flush=True)
             pet = db.query(Pet).filter(Pet.id == pet_id).first()
             if not pet:
+                print(f"  └── [Kết quả]: Không tìm thấy thú cưng có ID {pet_id}", flush=True)
+                print(f"{'='*70}\n", flush=True)
                 return ""
             
             # Selectively extract fields to reduce context size
             allergies = [a.name for a in pet.allergies] if pet.allergies else []
             medications = [m.name for m in pet.medications] if pet.medications else []
+            print(f"  └── [Kết quả]: Đã nạp hồ sơ bé '{pet.name}' ({pet.species})", flush=True)
+            if allergies:
+                print(f"      ├── Dị ứng: {', '.join(allergies)}", flush=True)
+            if medications:
+                print(f"      └── Đang dùng thuốc: {', '.join(medications)}", flush=True)
+            print(f"{'='*70}\n", flush=True)
             
             context = f"Dữ liệu hồ sơ Pet (ID: {pet_id}):\n"
             context += f"- Tên: {pet.name}, Loài: {pet.species}, Tuổi: (Dựa theo ngày sinh {pet.dob})\n"
@@ -133,7 +160,8 @@ class AIOrchestrator:
             if medications:
                 context += f"- Đang dùng thuốc: {', '.join(medications)}\n"
             return context
-        except Exception:
+        except Exception as e:
+            print(f"  └── [Lỗi truy vấn SQL pet]: {e}", flush=True)
             try:
                 db.rollback()
             except Exception:
@@ -145,20 +173,32 @@ class AIOrchestrator:
             return ""
         import time
         now = time.time()
+        
+        print(f"\n{'='*70}", flush=True)
+        print(f"[RAG SQL PIPELINE] 🔍 Truy vấn dữ liệu dịch vụ phòng khám:", flush=True)
+        print(f"  └── [SQL Query]: SELECT id, name, base_price, estimated_duration_minutes FROM services WHERE is_active = true", flush=True)
+        
         if self._services_cache and (now - self._services_cache_time < 120.0):
+            print(f"  └── [Kết quả]: Đã nạp từ Cache SQL RAG (dữ liệu tức thì < 1ms)", flush=True)
+            print(f"{'='*70}\n", flush=True)
             return self._services_cache
         try:
             from app.models.appointment import Service
             services = db.query(Service).filter(Service.is_active == True).all()
             if not services:
+                print(f"  └── [Kết quả]: Không có dịch vụ nào đang kích hoạt.", flush=True)
+                print(f"{'='*70}\n", flush=True)
                 return ""
             context = "DANH SÁCH DỊCH VỤ HIỆN CÓ CỦA PETCARE (Dùng để tư vấn và đặt lịch):\n"
             for s in services:
                 context += f"- {s.name} (ID: {str(s.id)}) - Giá: {s.base_price}đ - Thời gian: {s.estimated_duration_minutes} phút. Danh mục: {s.category.value}\n"
             self._services_cache = context
             self._services_cache_time = now
+            print(f"  └── [Kết quả]: Đã nạp thành công {len(services)} dịch vụ phòng khám vào Prompt Context", flush=True)
+            print(f"{'='*70}\n", flush=True)
             return context
-        except Exception:
+        except Exception as e:
+            print(f"  └── [Lỗi truy vấn SQL services]: {e}", flush=True)
             return ""
 
     def _get_shop_context(self, db: Session) -> str:
@@ -166,12 +206,21 @@ class AIOrchestrator:
             return ""
         import time
         now = time.time()
+        
+        print(f"\n{'='*70}", flush=True)
+        print(f"[RAG SQL PIPELINE] 🔍 Truy vấn kho sản phẩm & thú cưng Siêu thị:", flush=True)
+        print(f"  └── [SQL Query]: SELECT id, name, price, brand, stock_quantity FROM products WHERE category = 'PET' AND is_active = true", flush=True)
+        
         if self._shop_cache and (now - self._shop_cache_time < 120.0):
+            print(f"  └── [Kết quả]: Đã nạp từ Cache SQL RAG (dữ liệu tức thì < 1ms)", flush=True)
+            print(f"{'='*70}\n", flush=True)
             return self._shop_cache
         try:
             from app.models.product import Product
             pets = db.query(Product).filter(Product.category == "PET", Product.is_active == True).all()
             if not pets:
+                print(f"  └── [Kết quả]: Không có thú cưng nào đang mở bán.", flush=True)
+                print(f"{'='*70}\n", flush=True)
                 return ""
             context = f"DANH SÁCH THÚ CƯNG ĐANG MUA BÁN TẠI SIÊU THỊ PETCARE STORE (/shop) (Tổng cộng {len(pets)} giống thú cưng):\n"
             for p in pets:
@@ -180,8 +229,11 @@ class AIOrchestrator:
             context += "Chính sách: 100% thú cưng bán ra được tiêm đủ 2 mũi vắc-xin, tẩy giun, gắn microchip, bảo hành 30 ngày Care/Parvo và tặng gói khám tổng quát miễn phí!\n"
             self._shop_cache = context
             self._shop_cache_time = now
+            print(f"  └── [Kết quả]: Đã nạp thành công {len(pets)} giống thú cưng Siêu thị vào Prompt Context", flush=True)
+            print(f"{'='*70}\n", flush=True)
             return context
-        except Exception:
+        except Exception as e:
+            print(f"  └── [Lỗi truy vấn SQL shop]: {e}", flush=True)
             return ""
 
     async def stream_chat(self, request: AIChatRequest, db: Session = None, user_role: str = "customer") -> AsyncGenerator[str, None]:

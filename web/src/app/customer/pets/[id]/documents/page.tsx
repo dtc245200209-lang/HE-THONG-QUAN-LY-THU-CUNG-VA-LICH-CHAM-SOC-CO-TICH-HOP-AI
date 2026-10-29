@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { 
   ArrowLeft, UploadCloud, FileText, Sparkles, CheckCircle2, 
   AlertCircle, RefreshCw, Calendar, Building, Stethoscope, 
-  ShieldCheck, Eye, Download, Check
+  ShieldCheck, Eye, Download, Check, X, ExternalLink
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -61,6 +61,8 @@ export default function PetDocumentsPage() {
   });
   const [confirming, setConfirming] = useState(false);
   const [confirmSuccess, setConfirmSuccess] = useState('');
+  const [previewModalUrl, setPreviewModalUrl] = useState<string | null>(null);
+  const [previewModalTitle, setPreviewModalTitle] = useState<string>('');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -472,14 +474,16 @@ export default function PetDocumentsPage() {
                     </p>
 
                     <div className="flex items-center gap-2 pt-1 border-t border-gray-200 text-[11px]">
-                      <a 
-                        href={getFileUrl(doc.file_url)} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="text-indigo-600 hover:underline flex items-center gap-1 font-semibold"
+                      <button 
+                        type="button"
+                        onClick={() => {
+                          setPreviewModalUrl(getFileUrl(doc.file_url));
+                          setPreviewModalTitle(doc.title);
+                        }}
+                        className="text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 font-semibold cursor-pointer"
                       >
                         <Eye className="w-3 h-3" /> Xem ảnh gốc
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -489,6 +493,53 @@ export default function PetDocumentsPage() {
         </div>
 
       </main>
+
+      {/* Lightbox Image Preview Modal */}
+      {previewModalUrl && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4"
+          onClick={() => setPreviewModalUrl(null)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-3xl w-full max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="px-5 py-3 border-b border-gray-200 flex items-center justify-between bg-slate-50">
+              <div className="flex items-center gap-2 min-w-0">
+                <FileText className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                <h3 className="font-bold text-sm text-gray-900 truncate">{previewModalTitle}</h3>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <a
+                  href={previewModalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg flex items-center gap-1.5 transition"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" /> Mở tab mới
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setPreviewModalUrl(null)}
+                  className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Image Body */}
+            <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-900/5 min-h-[300px]">
+              <img 
+                src={previewModalUrl} 
+                alt={previewModalTitle} 
+                className="max-w-full max-h-[78vh] object-contain rounded-lg shadow-sm border border-gray-200 bg-white" 
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
